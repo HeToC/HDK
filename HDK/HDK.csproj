@@ -9,7 +9,7 @@
     <ProjectGuid>{9B72DEFB-367F-486D-8CD0-1DDA8DC623E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HDK</RootNamespace>
+    <RootNamespace>System</RootNamespace>
     <AssemblyName>HDK</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
@@ -100,11 +100,34 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Folder Include="Controls\" />
-    <Folder Include="Core\" />
+    <Folder Include="System\ComponentModel\" />
+    <Folder Include="System\Threading\Tasks\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Services\ILoggerService.cs" />
+    <Compile Include="System\Services\IService.cs" />
+    <Compile Include="System\Windows\Xaml\CompositeApplication.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

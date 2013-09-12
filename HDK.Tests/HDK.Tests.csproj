@@ -117,6 +117,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="HDK.Tests_TemporaryKey.pfx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\UnitTestLogo.png">
@@ -131,6 +132,23 @@
     <Content Include="Images\UnitTestStoreLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

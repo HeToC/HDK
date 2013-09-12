@@ -1,10 +1,11 @@
-﻿<Application
+﻿<HDK:CompositeApplication
     x:Class="HDK.Demo.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:HDK ="using:System.Windows.Xaml"
     xmlns:local="using:HDK.Demo">
 
-    <Application.Resources>
+    <HDK:CompositeApplication.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
@@ -16,5 +17,5 @@
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
-    </Application.Resources>
-</Application>
+    </HDK:CompositeApplication.Resources>
+</HDK:CompositeApplication>
