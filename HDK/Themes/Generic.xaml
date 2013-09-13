@@ -190,7 +190,8 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <Button Style="{TemplateBinding BackButtonStyle}" Visibility="{Binding Path=InternalFrame.CanGoBack,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource conBool2Visibility}}"
+                              <!-- Style="{TemplateBinding BackButtonStyle}" -->
+                                <Button  Visibility="{Binding Path=InternalFrame.CanGoBack,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource conBool2Visibility}}"
                                         Command="{Binding GoBackCommand,RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                         BorderBrush="Yellow" BorderThickness="2"/>
                                 <ContentControl Grid.Column="1" Content="{TemplateBinding Header}"/>
