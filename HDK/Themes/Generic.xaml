@@ -1,0 +1,206 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:System.Windows.Xaml"
+    xmlns:converters="using:System.Windows.Xaml.Data">
+
+    <converters:BooleanToVisibilityConverter x:Key="conBool2Visibility"/>
+
+    <Style TargetType="local:HeaderedContentControl">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:HeaderedContentControl">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <ContentPresenter Content="{TemplateBinding Header}"
+                                              ContentTransitions="{TemplateBinding HeaderTransitions}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"/>
+
+                            <ContentPresenter Grid.Row="1"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Color x:Key="ExpanderCheckBoxPressed">#80000000</Color>
+    <Color x:Key="ExpanderCheckBoxHighlighted">#60FFFFFF</Color>
+    <Color x:Key="ExpanderCheckBoxDisabled">Gray</Color>
+
+    <Style x:Key="ExpanderCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Name="border">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Path Name="Path"
+                                      Data="M 0 5 H 10 M 5 5 V 10 Z" 
+                                      Height="10" 
+                                      Width="10" 
+                                      Stroke="{TemplateBinding Foreground}"
+                                      StrokeThickness="2"
+                                      IsHitTestVisible="False"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center" 
+                                      Margin="{TemplateBinding Padding}"/>
+
+                            <Grid Grid.Column="1"
+                                      Margin="{TemplateBinding Padding}">
+                                <ContentControl Name="content"
+                                                    Foreground="{TemplateBinding Foreground}"
+                                                    Content="{TemplateBinding Content}"
+                                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            </Grid>
+
+
+                            <Rectangle Fill="Transparent" IsHitTestVisible="False" Name="Overlay" Grid.ColumnSpan="2"/>
+                        </Grid>
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Overlay" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)"
+                                                   Duration="0" To="{StaticResource ExpanderCheckBoxHighlighted}"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Overlay" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)"
+                                                            Duration="0" To="{StaticResource ExpanderCheckBoxPressed}"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Overlay" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)"
+                                                            Duration="0" To="Transparent"/>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                   Duration="0" To="Transparent"/>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                   Duration="0" To="{StaticResource ExpanderCheckBoxDisabled}"/>
+                                        <ColorAnimation Storyboard.TargetName="content" Storyboard.TargetProperty="(ContentControl.Foreground).(SolidColorBrush.Color)"
+                                                   Duration="0" To="{StaticResource ExpanderCheckBoxDisabled}"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.3"/>
+                                    <VisualTransition GeneratedDuration="0:0:0.1" To="Pressed"/>
+                                </VisualStateGroup.Transitions>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="Path" Storyboard.TargetProperty="Data">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="M 0 5 H 10"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="local:Expander">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:Expander">
+                    <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                Name="border">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <CheckBox IsChecked="{Binding IsExpanded,Mode=TwoWay,RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                          Style="{StaticResource ExpanderCheckBoxStyle}"
+                                          Background="Transparent"
+                                          Foreground="{TemplateBinding Foreground}">
+                                <ContentPresenter Content="{TemplateBinding Header}"
+                                                      ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+                            </CheckBox>
+
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Visibility="{TemplateBinding ContentVisibility}"
+                                                  Grid.Row="1"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="local:HeaderedFrame">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:HeaderedFrame">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="130"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Style="{TemplateBinding BackButtonStyle}" Visibility="{Binding Path=InternalFrame.CanGoBack,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource conBool2Visibility}}"
+                                        Command="{Binding GoBackCommand,RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                        BorderBrush="Yellow" BorderThickness="2"/>
+                                <ContentControl Grid.Column="1" Content="{TemplateBinding Header}"/>
+                            </Grid>
+
+                            <Frame Name="PART_Frame" Grid.Row="1"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+ </ResourceDictionary>

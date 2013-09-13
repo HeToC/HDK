@@ -5,9 +5,12 @@
     xmlns:local="using:HDK.Demo"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
+    xmlns:HDKUI = "using:System.Windows.Xaml"
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-
+      <HDKUI:HeaderedFrame>
+      </HDKUI:HeaderedFrame>
     </Grid>
 </Page>

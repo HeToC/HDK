@@ -100,15 +100,25 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ComponentModel\INotifyPropertyChangedExtensions.cs" />
     <Compile Include="System\Services\ILoggerService.cs" />
     <Compile Include="System\Services\IService.cs" />
     <Compile Include="System\Threading\Tasks\AsyncLazy.cs" />
     <Compile Include="System\Threading\Tasks\AsyncLazyStatus.cs" />
+    <Compile Include="System\Windows\Input\DelegateCommand.cs" />
     <Compile Include="System\Windows\Xaml\CompositeApplication.cs" />
+    <Compile Include="System\Windows\Xaml\Data\BooleanToVisibilityConverter.cs" />
+    <Compile Include="System\Windows\Xaml\Expander.cs" />
+    <Compile Include="System\Windows\Xaml\HeaderedContentControl.cs" />
+    <Compile Include="System\Windows\Xaml\HeaderedFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Composition.AttributedModel">
