@@ -5,9 +5,17 @@
     xmlns:local="using:HDK.Demo.Views.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:HDKUI = "using:System.Windows.Xaml"
+    NavigationCacheMode="Enabled"
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-
+        <Grid Background="YellowGreen">
+            <StackPanel>
+                <TextBlock FontSize="40" Foreground="Black">Page 1</TextBlock>
+                <TextBox Text="Hello Mgen"/>
+                <Button Margin="0 50 20 0" FontSize="26" HorizontalAlignment="Right">asad</Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

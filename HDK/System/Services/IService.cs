@@ -10,33 +10,46 @@ namespace System.Services
 {
     public interface IService : IDisposable
     {
-        void StartService();
+        //void StartService();
 
-        void StopService();
+        //void StopService();
     }
 
+    public interface IServiceMetadata
+    {
+        string ServiceName { get; set; }
+        string Description { get; set; }
+        int SequenceNumber { get; set; }
 
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ExportServiceAttribute : ExportAttribute//, IServiceMetadata
+        Type ServiceType { get; set; }
+    }
+
+    public class ServiceMetadata : IServiceMetadata
     {
         public string ServiceName { get; set; }
-        public Type ServiceType { get; set; }
         public string Description { get; set; }
         public int SequenceNumber { get; set; }
 
-        public ExportServiceAttribute()
-        {
-        }
+        public Type ServiceType { get; set; }
+    }
 
-        public ExportServiceAttribute(string serviceName, string description, Type serviceType, int sequenceNumber)
+    [MetadataAttribute]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class ExportServiceAttribute : ExportAttribute, IServiceMetadata
+    {
+        public string ServiceName { get; set; }
+        public string Description { get; set; }
+        public int SequenceNumber { get; set; }
+
+        public Type ServiceType { get; set; }
+
+        public ExportServiceAttribute(string serviceName, string description, Type serviceType, int sequenceNumber = 0)
             : base(typeof(IService))
         {
-            Debug.WriteLine(serviceName);
             ServiceName = serviceName;
-            ServiceType = serviceType;
             Description = description;
             SequenceNumber = sequenceNumber;
+            ServiceType = serviceType;
         }
 
         public override bool Equals(object obj)
@@ -46,8 +59,8 @@ namespace System.Services
                 return false;
 
             return this.ServiceName.Equals(v.ServiceName) &&
-                   this.ServiceType.Equals(v.ServiceType) &&
                    this.Description.Equals(v.Description) &&
+                   this.ServiceType.Equals(v.ServiceType) &&
                    this.SequenceNumber.Equals(v.SequenceNumber);
         }
 

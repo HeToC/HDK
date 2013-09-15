@@ -60,8 +60,7 @@ namespace System.Services
     ///     The default (debug) logger
     /// </summary>
     [Shared]
-    [ExportService("Default Logger service", "", typeof(ILoggerService), 0)]
-    [Export(typeof(ILoggerService))]
+    [ExportService("Default Logger Service", "description", typeof(ILoggerService))]
     public class DefaultLogger : ILoggerService
     {
         /// <summary>
@@ -69,19 +68,13 @@ namespace System.Services
         /// </summary>
         private const string TEMPLATE = "{0} {1} {2} :: {3}";
 
-        private LogSeverity _severityLevel;
+        private LogSeverity _severityLevel = LogSeverity.Verbose;
 
         public List<string> LogEntries { get; set; }
 
+
         public DefaultLogger()
-            : this(LogSeverity.Verbose)
         {
-        }
-
-        public DefaultLogger(LogSeverity minimumSeverity)
-        {
-            _severityLevel = minimumSeverity;
-
             LogEntries = new List<string>();
         }
 

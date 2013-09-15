@@ -169,39 +169,4 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:HeaderedFrame">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="local:HeaderedFrame">
-                    <Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="130"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                              <!-- Style="{TemplateBinding BackButtonStyle}" -->
-                                <Button  Visibility="{Binding Path=InternalFrame.CanGoBack,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource conBool2Visibility}}"
-                                        Command="{Binding GoBackCommand,RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                        BorderBrush="Yellow" BorderThickness="2"/>
-                                <ContentControl Grid.Column="1" Content="{TemplateBinding Header}"/>
-                            </Grid>
-
-                            <Frame Name="PART_Frame" Grid.Row="1"/>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
  </ResourceDictionary>

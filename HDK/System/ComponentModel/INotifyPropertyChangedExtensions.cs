@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,12 +29,12 @@ namespace System.ComponentModel
 
             storage = value;
 
-            handler.RaisePropertyChanged(sender, propertyName);
+            handler.Raise(sender, propertyName);
             return true;
         }
 
 
-        public static void RaisePropertyChanged(this PropertyChangedEventHandler handler, INotifyPropertyChanged sender, [CallerMemberName] string propertyName = null)
+        public static void Raise(this PropertyChangedEventHandler handler, INotifyPropertyChanged sender, [CallerMemberName] string propertyName = null)
         {
             if (handler != null && !string.IsNullOrEmpty(propertyName))
             {
