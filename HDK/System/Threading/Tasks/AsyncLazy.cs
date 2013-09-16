@@ -75,7 +75,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        public AsyncLazyStatus Statis
+        public AsyncLazyStatus Status
         {
             get { return m_Status; }
             private set { PropertyChanged.SetPropertyValueAndNotify(this, ref m_Status, value); }
