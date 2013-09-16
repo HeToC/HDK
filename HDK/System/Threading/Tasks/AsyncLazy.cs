@@ -10,134 +10,277 @@ namespace System.Threading.Tasks
 {
     public class AsyncLazy<T> : INotifyPropertyChanged
     {
-        #region Fields
+        #region Constructor default attribute values
 
-        readonly object locker = new object();
-        T m_DefaultValue;
-        Lazy<Task<T>> m_Adaptee;
-        private string m_ErrorMessage = null;
-        private bool m_IsFaulted = false;
-        private bool m_HasValue = false;
-        private AsyncLazyStatus m_Status = AsyncLazyStatus.NotInitialized;
+        private static readonly CancellationToken DefaultCancellationToken = CancellationToken.None;
+        private static readonly TaskCreationOptions DefaultCreationOptions = TaskCreationOptions.DenyChildAttach;
+        private static readonly TaskScheduler DefaultTaskScheduler = TaskScheduler.Default;
 
-        #endregion Fields
+        #endregion
 
-        #region Constructors
+        #region Private variables
+        private readonly Lazy<Task<T>> m_adaptee;
+        private T m_DefaultValue = default(T);
+        private T m_Value = default(T);
+        private Task<T> m_adoptedTask { get { return (m_adaptee != null) ? m_adaptee.Value : null; } }
+        #endregion
 
-        public AsyncLazy(Func<T> valueFactory, T defaultValue = default(T))
+        #region Public Properties
+
+        public bool IsValueCreated { get { return (m_adaptee != null) ? m_adaptee.IsValueCreated : false; } }
+
+        //
+        // Summary:
+        //     Gets the System.AggregateException that caused the System.Threading.Tasks.m_adoptedTask
+        //     to end prematurely. If the System.Threading.Tasks.m_adoptedTask completed successfully
+        //     or has not yet thrown any exceptions, this will return null.
+        //
+        // Returns:
+        //     The System.AggregateException that caused the System.Threading.Tasks.m_adoptedTask
+        //     to end prematurely.
+        public AggregateException Exception { get { return this.IsValueCreated ? m_adoptedTask.Exception : null; } }
+
+        public Exception InnerException { get { return (this.Exception == null) ? null : this.Exception.InnerException; } }
+
+        public string ErrorMessage { get { return (this.InnerException == null) ? null : this.InnerException.Message; } }
+
+        //
+        // Summary:
+        //     Gets a unique ID for this System.Threading.Tasks.m_adoptedTask instance.
+        //
+        // Returns:
+        //     An integer that was assigned by the system to this task instance.
+        public int TaskId { get { return this.IsValueCreated ? m_adoptedTask.Id : -1; } }
+
+        //
+        // Summary:
+        //     Gets whether this System.Threading.Tasks.m_adoptedTask instance has completed execution
+        //     due to being canceled.
+        //
+        // Returns:
+        //     true if the task has completed due to being canceled; otherwise false.
+        public bool IsCanceled { get { return this.IsValueCreated ? m_adoptedTask.IsCanceled : false; } }
+
+        //
+        // Summary:
+        //     Gets whether this System.Threading.Tasks.m_adoptedTask has completed.
+        //
+        // Returns:
+        //     true if the task has completed; otherwise false.
+        public bool IsCompleted { get { return this.IsValueCreated ? m_adoptedTask.IsCompleted : false; } }
+
+        public bool IsSuccessfullyCompleted { get { return this.Status == AsyncLazyStatus.RanToCompletion; } }
+
+        //
+        // Summary:
+        //     Gets whether the System.Threading.Tasks.m_adoptedTask completed due to an unhandled
+        //     exception.
+        //
+        // Returns:
+        //     true if the task has thrown an unhandled exception; otherwise false.
+        public bool IsFaulted { get { return this.IsValueCreated ? m_adoptedTask.IsFaulted : false; } }
+
+        //
+        // Summary:
+        //     Gets the System.Threading.Tasks.TaskStatus of this m_adoptedTask.
+        //
+        // Returns:
+        //     The current System.Threading.Tasks.TaskStatus of this task instance.
+        public AsyncLazyStatus Status { get { return (AsyncLazyStatus)(this.IsValueCreated ? (int)m_adoptedTask.Status : -1); } }
+
+        public T DefaultValue
         {
-            if (valueFactory == null)
+            get
             {
-                throw new ArgumentNullException("valueFactory");
+                return m_DefaultValue;
             }
-
-            m_DefaultValue = defaultValue;
-            m_Adaptee = new Lazy<Task<T>>(() => AppendTask(Task.Run(valueFactory)));
-        }
-
-        public AsyncLazy(Func<Task<T>> taskFactory, T defaultValue = default(T))
-        {
-            if (taskFactory == null)
+            set
             {
-                throw new ArgumentNullException("taskFactory");
+                m_DefaultValue = value;
+                this.RaisePropertyChanged(this.PropertyChanged, "DefaultValue");
             }
-
-            m_DefaultValue = defaultValue;
-            m_Adaptee = new Lazy<Task<T>>(() => AppendTask(Task.Run(taskFactory)));
         }
-
-        #endregion Constructors
-
-        #region Events
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion Events
-
-        #region Properties
 
         public T Value
         {
             get
             {
-                if (IsFaulted)
-                    return m_DefaultValue;
+                if (m_adaptee.Value.IsCompleted)
+                    return m_adaptee.Value.Result;
 
-                if (m_Adaptee.Value.IsCompleted)
-                    return m_Adaptee.Value.Result;
-                else
-                    lock (locker)
-                        return m_DefaultValue;
+                return DefaultValue;
             }
-            private set
+            set
             {
-                PropertyChanged.SetPropertyValueAndNotify(this, ref m_DefaultValue, value);
+                m_Value = value;
+
+                this.RaisePropertyChanged(this.PropertyChanged, "Value");
             }
         }
 
-        public AsyncLazyStatus Status
+        #endregion
+
+        #region Constructors
+
+        #region Value factory based
+
+        public AsyncLazy(Func<T> valueFactory, T defaultValue = default(T)) :
+            this(valueFactory, defaultValue, DefaultCancellationToken, DefaultCreationOptions, DefaultTaskScheduler)
         {
-            get { return m_Status; }
-            private set { PropertyChanged.SetPropertyValueAndNotify(this, ref m_Status, value); }
         }
 
-        public string ErrorMessage
+        public AsyncLazy(Func<T> valueFactory, CancellationToken cancellationToken, T defaultValue = default(T)) :
+            this(valueFactory, defaultValue, cancellationToken, DefaultCreationOptions, DefaultTaskScheduler)
         {
-            get { return m_ErrorMessage; }
-            private set { PropertyChanged.SetPropertyValueAndNotify(this, ref m_ErrorMessage, value); }
         }
 
-        public bool IsFaulted
+        public AsyncLazy(Func<T> valueFactory, TaskCreationOptions creationOptions, T defaultValue = default(T)) :
+            this(valueFactory, defaultValue, DefaultCancellationToken, creationOptions, DefaultTaskScheduler)
         {
-            get { return m_IsFaulted; }
-            private set { PropertyChanged.SetPropertyValueAndNotify(this, ref m_IsFaulted, value); }
-        }
-
-        public bool HasValue
-        {
-            get { return m_HasValue; }
-            private set { PropertyChanged.SetPropertyValueAndNotify(this, ref m_HasValue, value); }
-        }
-
-        #endregion Properties
-
-        #region Methods
-
-        public TaskAwaiter<T> GetAwaiter()
-        {
-            return m_Adaptee.Value.GetAwaiter();
         }
 
 
-        Task<T> AppendTask(Task<T> task)
-        {
-            var scheduler = (SynchronizationContext.Current == null) ? TaskScheduler.Current : TaskScheduler.FromCurrentSynchronizationContext();
+        #endregion
 
-            task.ContinueWith(t =>
+        #region Task factory based
+
+        public AsyncLazy(Func<Task<T>> taskFactory, T defaultValue = default(T)) :
+            this(taskFactory, defaultValue, DefaultCancellationToken, DefaultCreationOptions, DefaultTaskScheduler)
+        {
+        }
+
+        public AsyncLazy(Func<Task<T>> taskFactory, CancellationToken cancellationToken, T defaultValue = default(T)) :
+            this(taskFactory, defaultValue, cancellationToken, DefaultCreationOptions, DefaultTaskScheduler)
+        {
+        }
+
+        public AsyncLazy(Func<Task<T>> taskFactory, TaskCreationOptions creationOptions, T defaultValue = default(T)) :
+            this(taskFactory, defaultValue, DefaultCancellationToken, creationOptions, DefaultTaskScheduler)
+        {
+        }
+
+        #endregion
+
+        #region Core constructors
+
+        public AsyncLazy(Func<T> valueFactory, T defaultValue, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            DefaultValue = defaultValue;
+
+            m_adaptee = CreateAdaptee(valueFactory, null, cancellationToken, creationOptions, scheduler);
+        }
+
+        public AsyncLazy(Func<object, T> valueFactory,T defaultValue, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            DefaultValue = defaultValue;
+
+            m_adaptee = CreateAdaptee(valueFactory, state, cancellationToken, creationOptions, scheduler);
+        }
+
+        public AsyncLazy(Func<Task<T>> taskFactory, T defaultValue, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            DefaultValue = defaultValue;
+
+            m_adaptee = CreateAdaptee(() => taskFactory(), null, cancellationToken, creationOptions, scheduler);
+        }
+
+        public AsyncLazy(Func<object, Task<T>> taskFactory,T defaultValue, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            DefaultValue = defaultValue;
+
+            m_adaptee = CreateAdaptee((o) => taskFactory(o), state, cancellationToken, creationOptions, scheduler);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Adaptee Factory
+
+        private Lazy<Task<T>> CreateAdaptee(Func<T> valueFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, cancellationToken, creationOptions, scheduler).ContinueWith<T>(TaskContinuationFunction));
+        }
+        private Lazy<Task<T>> CreateAdaptee(Func<object, T> valueFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, context, cancellationToken, creationOptions, scheduler).ContinueWith<T>(TaskContinuationFunction));
+        }
+
+        private Lazy<Task<T>> CreateAdaptee(Func<Task<T>> taskFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(() => taskFactory(), cancellationToken, creationOptions, scheduler).Unwrap().ContinueWith<T>(TaskContinuationFunction));
+        }
+        private Lazy<Task<T>> CreateAdaptee(Func<object, Task<T>> taskFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        {
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(taskFactory, context, cancellationToken, creationOptions, scheduler)
+                .Unwrap().ContinueWith<T>(TaskContinuationFunction));
+        }
+
+        //protected virtual Lazy<Task<T>> CreateAdaptee(Expression<Func<T>> factory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        //{
+        //    if(factory is Func<T>)
+        //        return new Lazy<Task<T>>(() => Task.Factory.StartNew<T>(factory as Func<T>, cancellationToken, creationOptions, scheduler)
+        //            .ContinueWith<T>(TaskContinuationFunction));
+        //    else if (factory is Func<object, T>)
+        //        return new Lazy<Task<T>>(() => Task.Factory.StartNew<T>(factory as Func<object, T>, context, cancellationToken, creationOptions, scheduler)
+        //            .ContinueWith<T>(TaskContinuationFunction));
+        //    else if (factory is Func<Task<T>>)
+        //        return new Lazy<Task<T>>(
+        //            () => 
+        //                Task.Factory.StartNew<T>(
+        //                    (factory as Func<Task<T>>)(),
+        //                    cancellationToken,
+        //                    creationOptions,
+        //                    scheduler)
+        //            .Unwrap()
+        //            .ContinueWith<T>(TaskContinuationFunction));
+        //    else if (factory is Func<object, Task<T>>)
+        //        return new Lazy<Task<T>>(() => Task.Factory.StartNew<T>(factory as Func<object, Task<T>>, context, cancellationToken, creationOptions, scheduler).Unwrap()
+        //            .ContinueWith<T>(TaskContinuationFunction));
+
+        //    throw new ArgumentException("Argumernt is neither Func<T> nor Func<object,T>", "factory");
+        //}
+
+        #endregion
+
+        protected virtual T TaskContinuationFunction(Task<T> task)
+        {
+            if (!task.IsCompleted)
             {
-                if (t.Exception != null)
+                var scheduler = (SynchronizationContext.Current == null) ? TaskScheduler.Current : TaskScheduler.FromCurrentSynchronizationContext();
+                task.ContinueWith(t =>
                 {
-                    if (t.Exception is AggregateException)
-                        ErrorMessage = ((AggregateException)t.Exception).InnerExceptions[0].Message;
-                    else
-                        ErrorMessage = t.Exception.Message;
-                    HasValue = IsFaulted = true;
-                }
-                else
-                {
-                    lock (locker)
+                    var propertyChanged = PropertyChanged;
+                    if (propertyChanged != null)
                     {
-                        Value = t.Result;
+                        this.RaisePropertyChanged(propertyChanged, "Status", "IsCompleted", "IsValueCreated");
+                        if (t.IsCanceled)
+                            this.RaisePropertyChanged(propertyChanged, "IsCanceled");
+                        else if (t.IsFaulted)
+                            this.RaisePropertyChanged(propertyChanged, "IsFaulted", "Exception", "InnerException", "ErrorMessage");
+                        else
+                        {
+                            Value = t.Result;
+                            this.RaisePropertyChanged(propertyChanged, "IsSuccessfullyCompleted", "Result", "Value");
+                        }
                     }
-                    HasValue = true;
-                }
 
-            }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
+                },
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                scheduler);
+            }
 
-
-            return task;
+            return task.Result;
         }
 
-        #endregion Methods
+        public void Start()
+        {
+            var dummy = this.m_adaptee.Value;
+        }
+
+        public TaskAwaiter<T> GetAwaiter() { return m_adoptedTask.GetAwaiter(); }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
