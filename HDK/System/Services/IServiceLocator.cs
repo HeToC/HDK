@@ -10,6 +10,7 @@ namespace System
 {
     /// <summary>
     /// Interface that defines Add/Remove and typesafe Resolve
+    /// inspired http://searchcode.com/codesearch/view/10571311
     /// </summary>
     public interface IServiceLocator : IServiceProvider
     {
