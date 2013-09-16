@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="HDK.Demo.MainPage"
+    x:Class="HDK.Demo.ShellView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:HDK.Demo"
@@ -10,6 +10,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="test" />
+        <Button Content="{Binding ButtonText}" />
     </Grid>
 </Page>

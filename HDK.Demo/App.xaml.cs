@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HDK.Demo.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace HDK.Demo
 
         protected override Type InitializeShell()
         {
-            return typeof(MainPage);
+            return typeof(ShellView);
         }
 
     }

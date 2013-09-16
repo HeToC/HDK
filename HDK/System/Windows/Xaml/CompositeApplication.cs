@@ -19,13 +19,16 @@ namespace System.Windows.Xaml
 {
     public abstract class CompositeApplication : Application
     {
+
+        [Import]
+        public IServiceLocator ServiceLocator { get; set; }
+
         [Import]
         public INavigationService NavigationService { get; set; }
 
-        [Import]
+        //[Import]
         public IMVVMLocatorService mvvmlocator { get; set; }
 
-        private IServiceLocator m_ServiceLocator;
         private ICompositionProvider m_CompositionProvider;
 
         public CompositeApplication()
@@ -48,20 +51,21 @@ namespace System.Windows.Xaml
             //serviceLocator.Add<INavigationService>(new NavigationService(), ConflictResolvingOptions.Skip);
             //serviceLocator.Add<ILoggerService>(new DefaultLogger(), ConflictResolvingOptions.Skip);
             serviceLocator.Add<ICompositionProvider>(() => compositionProvider, ConflictResolvingOptions.Skip);
+            serviceLocator.Add<IServiceLocator>(() => ServiceLocator, ConflictResolvingOptions.Replace);
 
-            compositionProvider.Compose(serviceLocator);
+            compositionProvider.Compose(ServiceLocator);
         }
 
         private void Initialize()
         {
             AttachEvents();
 
-            m_ServiceLocator = CreateServiceLocator();
-            m_CompositionProvider = CreateCompositionProvider(m_ServiceLocator);
+            ServiceLocator = CreateServiceLocator();
+            m_CompositionProvider = CreateCompositionProvider(ServiceLocator);
 
-            InitializeServices(m_ServiceLocator, m_CompositionProvider);
+            InitializeServices(ServiceLocator, m_CompositionProvider);
 
-            IMVVMLocatorService mvvmLocator = m_ServiceLocator.Resolve<IMVVMLocatorService>();
+            IMVVMLocatorService mvvmLocator = ServiceLocator.Resolve<IMVVMLocatorService>();
 
             m_CompositionProvider.Compose(this);
         }

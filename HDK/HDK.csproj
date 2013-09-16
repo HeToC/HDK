@@ -116,12 +116,13 @@
     <Compile Include="System\ComponentModel\IViewLifetimeContext.cs" />
     <Compile Include="System\ComponentModel\ViewModelBase.cs" />
     <Compile Include="System\ComponentModel\ViewModelLocatorService.cs" />
+    <Compile Include="System\Navigation\IFrameAdapter.cs" />
     <Compile Include="System\Services\ICompositionFactory.cs" />
     <Compile Include="System\Services\ICompositionProvider.cs" />
     <Compile Include="System\Services\MefCompositionFactory.cs" />
     <Compile Include="System\Services\MefCompositionProvider.cs" />
     <Compile Include="System\Services\ILoggerService.cs" />
-    <Compile Include="System\Services\INavigationService.cs" />
+    <Compile Include="System\Navigation\INavigationService.cs" />
     <Compile Include="System\Services\IService.cs" />
     <Compile Include="System\Services\IServiceLocator.cs" />
     <Compile Include="System\Services\ServiceLocator.cs" />

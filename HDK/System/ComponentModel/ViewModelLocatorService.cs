@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Services;
+using Windows.UI.Xaml;
 
 namespace System.ComponentModel
 {
     public interface IMVVMLocatorService : IService
     {
+        object LocateViewModelForToken(string CorrelationToken);
+        object LocateViewModelForView(object view);
     }
 
     [Shared]
@@ -35,7 +38,7 @@ namespace System.ComponentModel
         /// </summary>
         /// <param name="key">Correlation Token to search for</param>
         /// <returns>Located view model or null</returns>
-        public object LocateViewModel(string CorrelationToken)
+        public object LocateViewModelForToken(string CorrelationToken)
         {
             var view = m_ViewModels.FirstOrDefault(vm => vm.Metadata.CorrelationToken == CorrelationToken);
             
@@ -43,6 +46,31 @@ namespace System.ComponentModel
                 throw new Exception("Could not locate view model: " + CorrelationToken);
 
             return view.Value;
+        }
+
+        public object LocateViewModelForView(object view)
+        {
+            if (view == null)
+                return null;
+
+            var frameworkElement = view as FrameworkElement;
+            if (frameworkElement != null && frameworkElement.DataContext != null)
+                return frameworkElement.DataContext;
+
+            var iView = view as IView;
+            if (iView != null)
+            {
+                var viewTypeInfo = iView.GetType().GetTypeInfo();
+                var exportViewAttribute = viewTypeInfo.GetCustomAttribute<ExportViewAttribute>();
+                if (exportViewAttribute != null && !string.IsNullOrEmpty(exportViewAttribute.CorrelationToken))
+                {
+                    var lazyVM = m_ViewModels.FirstOrDefault(vm => vm.Metadata.CorrelationToken == exportViewAttribute.CorrelationToken);
+                    if (lazyVM != null)
+                        return lazyVM.Value;
+                }
+            }
+
+            return null;
         }
 
         public void Dispose()

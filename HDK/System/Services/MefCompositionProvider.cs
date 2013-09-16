@@ -29,7 +29,6 @@ namespace System.Services
 
         public event Action<ICompositionProvider, ContainerConfiguration> CreatingContainer;
 
-
         private ConventionBuilder Conventions
         {
             get { return _conventions ?? (_conventions = new ConventionBuilder()); }
@@ -44,6 +43,7 @@ namespace System.Services
 
                 // Add conventions.
                 Conventions.ForTypesDerivedFrom<IService>().Export<IService>().Shared(); //TODO BUG Dont work properly
+                //Conventions.ForTypesDerivedFrom<IServiceLocator>().Export<IServiceLocator>().Shared();
 
 
                 // Get a list of all the package assemblies.
@@ -62,6 +62,7 @@ namespace System.Services
                 _configuration = new ContainerConfiguration();
 
                 _configuration = _configuration.WithProvider(new ValueExportDescriptorProvider(m_ServiceLocator));
+
                 //_configuration = _configuration.WithProvider(new InheritedExportDescriptorProvider());
 
                 // Let any customization occur
@@ -77,12 +78,23 @@ namespace System.Services
 
         public CompositionHost Container
         {
-            get { return _container ?? (_container = Configuration.CreateContainer()); }
+            get
+            {
+                if (CreatingContainer != null)
+                    CreatingContainer(this, Configuration);
+                return _container ?? (_container = Configuration.CreateContainer());
+            }
         }
 
         public void Compose(object target)
         {
-            Container.SatisfyImports(target);
+            try
+            {
+                Container.SatisfyImports(target);
+            }
+            catch (Exception exc)
+            {
+            }
         }
 
         public Lazy<T> GetInstance<T>() where T : class
@@ -324,6 +336,9 @@ namespace System.Services
                 return NoExportDescriptors;
 
             var lazyValue = providedTypes[contract.ContractType];
+
+            Debug.WriteLine("ValueExportDescriptorProvider.GetExportDescriptors found out contract: {0}", contract.ContractType);
+
             return new[]
                        {
                            new ExportDescriptorPromise(contract, "ValueExportDescriptorProvider", true, NoDependencies,
