@@ -13,8 +13,9 @@
         <Grid Background="YellowGreen">
             <StackPanel>
                 <TextBlock FontSize="40" Foreground="Black">Page 1</TextBlock>
-                <TextBox Text="Hello Mgen"/>
-                <Button Margin="0 50 20 0" FontSize="26" HorizontalAlignment="Right">asad</Button>
+                <TextBox Text="Hello World"/>
+                <Button Margin="0 50 20 0" FontSize="26" HorizontalAlignment="Right">next</Button>
+                <Button Margin="0 50 20 0" FontSize="26" HorizontalAlignment="Right" Click="Button_Click">back</Button>
             </StackPanel>
         </Grid>
     </Grid>

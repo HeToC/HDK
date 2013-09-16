@@ -36,5 +36,10 @@ namespace HDK.Demo.Views.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.GoBack();
+        }
     }
 }

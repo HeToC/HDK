@@ -5,6 +5,7 @@ using System.Composition;
 using System.Composition.Hosting;
 using System.Diagnostics;
 using System.Linq;
+using System.Navigation;
 using System.Reflection;
 using System.Services;
 using System.Text;

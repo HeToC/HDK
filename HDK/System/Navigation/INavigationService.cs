@@ -10,8 +10,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using System.Globalization;
+using System.Services;
 
-namespace System.Services
+namespace System.Navigation
 {
     public interface INavigationService : IService
     {

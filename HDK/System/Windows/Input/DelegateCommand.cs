@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Windows.Input
@@ -15,13 +16,13 @@ namespace System.Windows.Input
 
         public DelegateCommand(Action syncExecute, Predicate<object> canExecute = null)
         {
-            _asyncExecute = (parameter) => Task.Factory.StartNew(syncExecute);
+            _asyncExecute = (parameter) => Task.Factory.StartNew(syncExecute, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
             _canExecute = canExecute;
         }
 
         public DelegateCommand(Action<object> syncExecute, Predicate<object> canExecute = null)
         {
-            _asyncExecute = (parameter) => Task.Factory.StartNew(syncExecute, parameter);
+            _asyncExecute = (parameter) => Task.Factory.StartNew(syncExecute, parameter, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
             _canExecute = canExecute;
         }
 
