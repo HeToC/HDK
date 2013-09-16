@@ -118,7 +118,7 @@ namespace System.Windows.Xaml
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 //if (!rootFrame.Navigate(typeof(MainPage), args.Arguments))
-                if (!NavigationService.Navigate(InitializeShell(), args.Arguments))
+                if (!NavigationService.Navigate(InitializeShell(), "/?TestProperty=ololoItWorks!!!!!!"))//args.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
                 }

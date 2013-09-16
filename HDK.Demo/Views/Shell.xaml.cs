@@ -38,5 +38,10 @@ namespace HDK.Demo
         {
             //frame.Navigate(typeof(Page1));
         }
+
+        private void TextBlock_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+
+        }
     }
 }

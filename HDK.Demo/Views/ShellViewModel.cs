@@ -12,7 +12,10 @@ namespace HDK.Demo
     {
         private string m_ButtonText;
         public string ButtonText { get { return m_ButtonText; } set { m_ButtonText = value; RaisePropertyChanged(); } }
-        
+
+        [NavigationBound("TestProperty")]
+        public string NavigationBoundText { get; set; }
+
         public ShellViewModel()
         {
             ButtonText = "dslkjfdslkjfdslkfsdljk";

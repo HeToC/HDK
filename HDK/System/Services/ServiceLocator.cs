@@ -42,7 +42,7 @@ namespace System
     /// IService svc = serviceResolver<IService>.Resolve();
     /// ]]>
     /// </example>
-    //[Shared]
+    [Shared]
     //[Export(typeof(IServiceLocator))]
     public sealed class ServiceLocator : IServiceLocator
     {

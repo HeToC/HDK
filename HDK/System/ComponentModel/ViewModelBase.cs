@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace System.ComponentModel
 {
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    public sealed class NavigationBoundAttribute : Attribute
+    {
+        public string Name { get; private set; }
+        public NavigationBoundAttribute(string uriParameterName)
+        {
+            Name = uriParameterName;
+        }
+    }
 
     public interface IViewModel : INotificationObject
     {

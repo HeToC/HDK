@@ -94,6 +94,7 @@ namespace System.Services
             }
             catch (Exception exc)
             {
+                Debug.WriteLine(exc.Message);
             }
         }
 

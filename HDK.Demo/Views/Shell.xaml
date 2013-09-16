@@ -10,6 +10,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="{Binding ButtonText}" />
+        <Button Content="{Binding ButtonText}" Margin="561,270,0,381" Height="117" Width="277" />
+        <TextBlock Text="{Binding NavigationBoundText}" Margin="321,17,415,646" />
     </Grid>
 </Page>
