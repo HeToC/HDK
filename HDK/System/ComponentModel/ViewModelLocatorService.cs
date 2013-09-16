@@ -14,17 +14,10 @@ namespace System.ComponentModel
     {
     }
 
-    /// <summary>
-    /// This class holds ViewModels that are registered with the ExportViewModelAttribute.
-    /// </summary>
-
     [Shared]
     [ExportService("Default mvvm locator Service", "description", typeof(IMVVMLocatorService))]
     public sealed class MEFMVVMLocatorService : IMVVMLocatorService
     {
-        /// <summary>
-        /// Located view models
-        /// </summary>
         private IList<Lazy<IViewModel, ViewModelMetadata>> m_ViewModels { get; set; }
         private IList<Lazy<IView, ViewMetadata>> m_Views { get; set; }
 
@@ -35,18 +28,6 @@ namespace System.ComponentModel
         {
             m_ViewModels = viewModels;
             m_Views = views;
-        }
-
-        /// <summary>
-        /// Operator to retrieve view models.
-        /// </summary>
-        /// <returns>Read-only version of view model collection</returns>
-        public object this[string CorrelationToken]
-        {
-            get
-            {
-                return LocateViewModel(CorrelationToken);
-            }
         }
 
         /// <summary>

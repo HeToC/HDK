@@ -94,7 +94,7 @@ namespace System.Windows.Xaml
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = CreateRootFrame();
-                ///////////////////////////////////////////NavigationService.AttachToFrame(rootFrame);
+                NavigationService.AttachToFrame(rootFrame);
 
 
                 if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
@@ -114,7 +114,7 @@ namespace System.Windows.Xaml
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 //if (!rootFrame.Navigate(typeof(MainPage), args.Arguments))
-                //i////////////////////////////////////////////////////f (!NavigationService.Navigate(InitializeShell(), args.Arguments))
+                if (!NavigationService.Navigate(InitializeShell(), args.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
                 }

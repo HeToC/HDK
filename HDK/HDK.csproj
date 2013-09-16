@@ -113,6 +113,7 @@
     <Compile Include="System\ComponentModel\INotificationObject.cs" />
     <Compile Include="System\ComponentModel\INotifyPropertyChangedExtensions.cs" />
     <Compile Include="System\ComponentModel\IView.cs" />
+    <Compile Include="System\ComponentModel\IViewLifetimeContext.cs" />
     <Compile Include="System\ComponentModel\ViewModelBase.cs" />
     <Compile Include="System\ComponentModel\ViewModelLocatorService.cs" />
     <Compile Include="System\Services\ICompositionFactory.cs" />
