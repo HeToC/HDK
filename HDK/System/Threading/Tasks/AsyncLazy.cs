@@ -111,6 +111,8 @@ namespace System.Threading.Tasks
 
         Task<T> AppendTask(Task<T> task)
         {
+            var scheduler = (SynchronizationContext.Current == null) ? TaskScheduler.Current : TaskScheduler.FromCurrentSynchronizationContext();
+
             task.ContinueWith(t =>
             {
                 if (t.Exception != null)
@@ -130,7 +132,8 @@ namespace System.Threading.Tasks
                     HasValue = true;
                 }
 
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
+
 
             return task;
         }
