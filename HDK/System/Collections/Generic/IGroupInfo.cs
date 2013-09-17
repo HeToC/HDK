@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation.Collections;
 using Windows.UI.Xaml.Data;
 
-namespace System.Data
+namespace System.Collections.Generic
 {
     /// <summary>
     /// 
@@ -15,4 +17,5 @@ namespace System.Data
     public interface IGroupInfo<TKey, TElement> : IGrouping<TKey, TElement>, ICollectionViewGroup
     {
     }
+
 }
