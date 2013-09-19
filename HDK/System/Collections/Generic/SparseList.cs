@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace System.Collections.Generic
 {
     //TODO: Add events and prepare for AsyncSparseList
-
     /// <summary>
     /// A list which can support a huge virtual item count
     /// by assuming that many items are never accessed. Space for items is allocated
@@ -18,15 +17,19 @@ namespace System.Collections.Generic
     public class SparseList<T> where T : class
     {
         private readonly int _pageSize;
-        private readonly PageList _allocatedPages;
-        private Page _currentPage;
+        private readonly ISparsePageList<T> _allocatedPages;
+        private ISparsePage<T> _currentPage;
 
         public SparseList(int pageSize)
         {
             _pageSize = pageSize;
-            _allocatedPages = new PageList(_pageSize);
+            _allocatedPages = CreatePageList(_pageSize);
         }
 
+        protected virtual ISparsePageList<T> CreatePageList(int pageSize)
+        {
+            return new SparsePageListBase<T>(pageSize);
+        }
 
         /// <remarks>This method is optimised for sequential access. I.e. it performs
         /// best when getting and setting indicies in the same locality</remarks>
@@ -72,93 +75,117 @@ namespace System.Collections.Generic
                 }
             }
         }
+    }
 
-        private struct PageAndSubIndex
+    public struct PageAndSubIndex
+    {
+        private readonly int _pageIndex;
+        private readonly int _subIndex;
+
+        public PageAndSubIndex(int pageIndex, int subIndex)
         {
-            private readonly int _pageIndex;
-            private readonly int _subIndex;
-
-            public PageAndSubIndex(int pageIndex, int subIndex)
-            {
-                _pageIndex = pageIndex;
-                _subIndex = subIndex;
-            }
-
-            public int PageIndex
-            {
-                get { return _pageIndex; }
-            }
-
-            public int SubIndex
-            {
-                get { return _subIndex; }
-            }
+            _pageIndex = pageIndex;
+            _subIndex = subIndex;
         }
 
-        private class Page
+        public int PageIndex
         {
-            private readonly int _pageIndex;
-            private readonly T[] _items;
-
-            public Page(int pageIndex, int pageSize)
-            {
-                _pageIndex = pageIndex;
-                _items = new T[pageSize];
-            }
-
-            public int PageIndex
-            {
-                get { return _pageIndex; }
-            }
-
-            public T this[int index]
-            {
-                get
-                {
-                    return _items[index];
-                }
-                set
-                {
-                    _items[index] = value;
-                }
-            }
-
-            public bool Trim(int firstIndex, int count)
-            {
-                for (int i = firstIndex; i < firstIndex + count; i++)
-                    _items[i] = default(T);
-
-                for (int i = 0; i < _items.Length; i++)
-                    if (_items[i] != null)
-                        return false;
-
-                return true;
-            }
+            get { return _pageIndex; }
         }
 
-        private class PageList : KeyedCollection<int, Page>
+        public int SubIndex
         {
-            private readonly int _pageSize;
-
-            public PageList(int pageSize)
-            {
-                _pageSize = pageSize;
-            }
-
-            protected override int GetKeyForItem(Page item)
-            {
-                return item.PageIndex;
-            }
-
-            public Page GetOrCreatePage(int pageIndex)
-            {
-                if (!Contains(pageIndex))
-                    Add(new Page(pageIndex, _pageSize));
-
-                return this[pageIndex];
-            }
+            get { return _subIndex; }
         }
     }
 
 
+    public interface ISparsePage<TElement>
+    {
+        int PageIndex { get; }
+        TElement this[int index] { get; set; }
+
+        bool Trim(int firstIndex, int count);
+    }
+
+
+    public class SparsePageBase<TElement> : ISparsePage<TElement>
+    {
+        private readonly int _pageIndex;
+        private readonly TElement[] _items;
+
+        public SparsePageBase(int pageIndex, int pageSize)
+        {
+            _pageIndex = pageIndex;
+            _items = new TElement[pageSize];
+        }
+
+        public int PageIndex
+        {
+            get { return _pageIndex; }
+        }
+
+        public TElement this[int index]
+        {
+            get
+            {
+                return _items[index];
+            }
+            set
+            {
+                _items[index] = value;
+            }
+        }
+
+        public bool Trim(int firstIndex, int count)
+        {
+            for (int i = firstIndex; i < firstIndex + count; i++)
+                _items[i] = default(TElement);
+
+            for (int i = 0; i < _items.Length; i++)
+                if (_items[i] != null)
+                    return false;
+
+            return true;
+        }
+    }
+
+    public interface ISparsePageList<TElement>
+    {
+        ISparsePage<TElement> GetOrCreatePage(int key);
+
+        bool Contains(int key);
+        bool Remove(int key);
+
+        ISparsePage<TElement> this[int key] { get; }
+    }
+
+
+    public class SparsePageListBase<TElement> : KeyedCollection<int, ISparsePage<TElement>>, ISparsePageList<TElement>
+    {
+        private readonly int _pageSize;
+
+        public SparsePageListBase(int pageSize)
+        {
+            _pageSize = pageSize;
+        }
+
+        protected override int GetKeyForItem(ISparsePage<TElement> item)
+        {
+            return item.PageIndex;
+        }
+
+        public ISparsePage<TElement> GetOrCreatePage(int pageIndex)
+        {
+            if (!Contains(pageIndex))
+                Add(CreatePage(pageIndex, _pageSize));
+
+            return this[pageIndex];
+        }
+
+        protected virtual ISparsePage<TElement> CreatePage(int pageIndex, int pageSize)
+        {
+            return new SparsePageBase<TElement>(pageIndex, pageSize);
+        }
+    }
 }
