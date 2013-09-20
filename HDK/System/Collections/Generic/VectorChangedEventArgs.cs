@@ -7,35 +7,35 @@ using Windows.Foundation.Collections;
 
 namespace System.Collections.Generic
 {
+
     /// <summary>
     /// Class that implements IVectorChangedEventArgs so we can fire VectorChanged events.
     /// </summary>
     public class VectorChangedEventArgs : IVectorChangedEventArgs
     {
-        static VectorChangedEventArgs _reset = new VectorChangedEventArgs(CollectionChange.Reset);
+        private readonly CollectionChange m_CollectionChange;
+        private readonly uint m_Index;
 
-        CollectionChange _cc = CollectionChange.Reset;
-        uint _index = (uint)0xffff;
-
-        public static VectorChangedEventArgs Reset
+        public VectorChangedEventArgs(CollectionChange change, int index = -1, object item = null)
         {
-            get { return _reset; }
+            m_CollectionChange = change;
+            m_Index = (uint)index;
         }
 
-        public VectorChangedEventArgs(CollectionChange cc, int index = -1, object item = null)
+        public VectorChangedEventArgs(CollectionChange change, uint index, object item = null)
         {
-            _cc = cc;
-            _index = (uint)index;
+            m_CollectionChange = change;
+            m_Index = index;
         }
 
         public CollectionChange CollectionChange
         {
-            get { return _cc; }
+            get { return m_CollectionChange; }
         }
 
         public uint Index
         {
-            get { return _index; }
+            get { return m_Index; }
         }
     }
 }
