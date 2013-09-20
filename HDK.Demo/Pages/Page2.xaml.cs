@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -20,26 +21,12 @@ namespace HDK.Demo.Views.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    [ExportView( CorrelationToken ="Page1", Url="ololo")]
-    public sealed partial class Page1 : Page, IView
+    [ExportView(typeof(Page2), "Page2")]
+    public sealed partial class Page2 : Page, IView
     {
-        public Page1()
+        public Page2()
         {
             this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.  The Parameter
-        /// property is typically used to configure the page.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.GoBack();
         }
     }
 }

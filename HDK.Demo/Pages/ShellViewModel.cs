@@ -19,7 +19,7 @@ namespace HDK.Demo
 
         public ICommand ButtonClickCommand { get; set; }
 
-        [NavigationBound("TestProperty")]
+        [NavigationBoundProperty("TestProperty")]
         public string NavigationBoundText { get; set; }
 
         [ImportingConstructor]
@@ -27,8 +27,7 @@ namespace HDK.Demo
         {
             var svcNav = svcLocator.Resolve<INavigationService>();
             ButtonText = "Navigate To page 1";
-            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(Page1)));
+            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(ObservableVectorDemo)));
         }
-
     }
 }

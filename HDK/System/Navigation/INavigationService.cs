@@ -110,24 +110,7 @@ namespace System.Navigation
             if (viewObject == null)
                 return;
 
-
-            var viewModel = m_MVVMLocatorService.LocateViewModelForView(viewObject) as IViewModel;
-            if (viewModel == null)
-                return;
-
-            var viewPage = viewObject as Page;
-            if (viewPage == null)
-            {
-                throw new ArgumentException("View '" + e.Content.GetType().FullName + "' should inherit from Page or one of its descendents.");
-            }
-
-            UpdateViewModelProperties(viewModel, e.Parameter);
-
-            //TODO: create advanced binding system
-            viewPage.DataContext = viewModel;
-
-            //TODO: Call viewmodel method if it has to be notified about view readiness
-
+            m_MVVMLocatorService.AttachViewModel(viewObject, e.Parameter);
         }
 
         protected virtual void OnNavigating(object sender, NavigatingCancelEventArgs e)
@@ -143,63 +126,6 @@ namespace System.Navigation
         public bool CanGoForward()
         {
             return m_mainFrame.CanGoForward;
-        }
-
-
-        protected virtual void UpdateViewModelProperties(IViewModel viewModel, object parameter)
-        {
-            m_Logger.Log(LogSeverity.Information, this, "NavigationService.UpdateViewModelProperties({0}, '{1}')", viewModel, parameter);
-
-            Uri uri = null;
-            if (!Uri.TryCreate(Convert.ToString(parameter), UriKind.RelativeOrAbsolute, out uri))
-                return;
-
-            IEnumerable<KeyValuePair<string, string>> parsedQuery = uri.ParseQueryString();
-            if (!parsedQuery.Any())
-                return;
-
-            IEnumerable<KeyValuePair<string, PropertyInfo>> boundReadyProperties = viewModel.GetNavigationBoundProperties();
-            if (!boundReadyProperties.Any())
-                return;
-
-            var joined = parsedQuery.Join(boundReadyProperties, pq => pq.Key, brp => brp.Key, (qp, bp) =>
-                new
-                {
-                    QueryPropertyName = qp.Key,
-                    QueryPropertyValue = qp.Value,
-                    BoundProperty = bp.Value
-                });
-
-            joined.ForEach(pii =>
-            {
-                m_Logger.Log(LogSeverity.Information, this, "Match Found: QueryProperty: '{0}', BoundProperty: '{1}' Value: {2}",
-                    pii.QueryPropertyName, pii.BoundProperty.Name, pii.QueryPropertyValue);
-
-                Type targetType = pii.BoundProperty.PropertyType;
-                var dataConverter = m_dataConverterService[targetType];
-
-                m_Logger.Log(LogSeverity.Information, this, "Trying to find DataConverter to '{0}'", targetType);
-
-                if (dataConverter == null)
-                {
-                    //TODO: try smth else
-                }
-                try
-                {
-
-                    pii.BoundProperty.SetValue(viewModel, dataConverter.Convert(pii.QueryPropertyValue, targetType, null, CultureInfo.InvariantCulture.Name));
-                }
-                catch (Exception exc)
-                {
-                    exc.Data.Add("BoundProperty", pii.BoundProperty.Name);
-                    exc.Data.Add("TargetType", targetType);
-                    exc.Data.Add("QueryProperty", pii.QueryPropertyName);
-                    exc.Data.Add("PropertyValue", pii.QueryPropertyValue);
-                    exc.Data.Add("DataConverter", dataConverter == null ? null : dataConverter.GetType());
-
-                    m_Logger.Log(LogSeverity.Error, this, "Unable to set bound property. {0}", "aga", exc);
-                }
-            });
         }
     }
 }

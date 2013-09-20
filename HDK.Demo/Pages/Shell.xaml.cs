@@ -21,8 +21,8 @@ namespace HDK.Demo
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    [ExportView(CorrelationToken="#Shell")]
-    public sealed partial class ShellView : Page, IView
+    [ExportView("#Shell")]
+    public sealed partial class ShellView : Page, IShellView
     {
         public ShellView()
         {
@@ -42,6 +42,12 @@ namespace HDK.Demo
         private void TextBlock_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
 
+        }
+
+
+        Frame IShellView.RootFrame
+        {
+            get { return this.RootFrame; }
         }
     }
 }

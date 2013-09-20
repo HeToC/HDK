@@ -27,8 +27,11 @@ namespace System.Windows.Xaml
         [Import]
         public INavigationService NavigationService { get; set; }
 
-        //[Import]
+        [Import]
         public IMVVMLocatorService mvvmlocator { get; set; }
+
+        [Import]
+        public IApplicationLifeTimeService lifetimeService { get; set; }
 
         private ICompositionProvider m_CompositionProvider;
 
@@ -76,11 +79,9 @@ namespace System.Windows.Xaml
             this.Suspending += OnSuspending;
         }
 
-        protected abstract Type InitializeShell();
-
-        protected virtual Frame CreateRootFrame()
+        protected virtual IShellView CreateShell()
         {
-            return new Frame();
+            return (IShellView)mvvmlocator.CreateView("#Shell", null);
         }
 
         /// <summary>
@@ -91,40 +92,36 @@ namespace System.Windows.Xaml
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            Frame rootFrame =  Window.Current.Content as Frame;
-
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (rootFrame == null)
+            IShellView shellView = Window.Current.Content as IShellView;
+            
+            // create shell if it has not been initialized yet
+            if (shellView == null)
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = CreateRootFrame();
+                shellView = CreateShell();
+                Frame rootFrame = shellView.RootFrame;
                 NavigationService.AttachToFrame(rootFrame);
-
 
                 if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
                 }
-
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
+                Window.Current.Content = shellView as UIElement;
             }
 
+            // navigate frame to start page
+            //if (shellView.RootFrame.Content == null)
+            //{
+            //    // When the navigation stack isn't restored navigate to the first page,
+            //    // configuring the new page by passing required information as a navigation
+            //    // parameter
+            //    //if (!rootFrame.Navigate(typeof(MainPage), args.Arguments))
+            //    if (!NavigationService.Navigate(CreateShell(), "/?TestProperty=ololoItWorks!!!!!!"))//args.Arguments))
+            //    {
+            //        throw new Exception("Failed to create initial page");
+            //    }
+            //}
 
-
-            if (rootFrame.Content == null)
-            {
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
-                //if (!rootFrame.Navigate(typeof(MainPage), args.Arguments))
-                if (!NavigationService.Navigate(InitializeShell(), "/?TestProperty=ololoItWorks!!!!!!"))//args.Arguments))
-                {
-                    throw new Exception("Failed to create initial page");
-                }
-            }
-            // Ensure the current window is active
+            
             Window.Current.Activate();
         }
 

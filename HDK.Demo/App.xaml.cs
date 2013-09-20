@@ -1,6 +1,7 @@
 ﻿using HDK.Demo.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Xaml;
@@ -33,11 +34,5 @@ namespace HDK.Demo
         {
             this.InitializeComponent();
         }
-
-        protected override Type InitializeShell()
-        {
-            return typeof(ShellView);
-        }
-
     }
 }

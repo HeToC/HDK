@@ -12,7 +12,7 @@ namespace System.ComponentModel
             var typeInfo = viewModel.GetType().GetTypeInfo();
             return from propertyInfo in typeInfo.DeclaredProperties
                    where propertyInfo.CanWrite
-                   let navBountAttr = propertyInfo.GetCustomAttribute<NavigationBoundAttribute>()
+                   let navBountAttr = propertyInfo.GetCustomAttribute<NavigationBoundPropertyAttribute>()
                    where navBountAttr != null
                    select new KeyValuePair<string, PropertyInfo>(navBountAttr.Name,propertyInfo);
         }
