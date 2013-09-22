@@ -11,10 +11,13 @@ using Windows.UI.Xaml.Data;
 namespace System.Collections.Generic
 {
     public class ObservableVector<TElement> : ObservableVector<TElement, List<object>>
+        where TElement : class, new()
     {
     }
 
-    public class ObservableVector<TElement, TInner> :BindableBase, IObservableVector<TElement> where TInner: IList, new()
+    public class ObservableVector<TElement, TInner> : BindableBase, IObservableVector<TElement>
+        where TInner : IList, new()
+        where TElement : class, new()
     {
         private TInner inner;
 
@@ -34,7 +37,7 @@ namespace System.Collections.Generic
         {
             var handler = this.VectorChanged;
             if (handler != null)
-                handler(this, new VectorChangedEventArgs(collectionChange,index));
+                handler(this, new VectorChangedEventArgs(collectionChange, index));
         }
 
         public virtual int IndexOf(TElement item)
@@ -139,5 +142,6 @@ namespace System.Collections.Generic
                 throw new Exception("The source collection cannot be modified.");
             }
         }
+        public bool CanRemove { get { return !IsReadOnly; } }
     }
 }

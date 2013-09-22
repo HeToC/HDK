@@ -27,7 +27,7 @@ namespace HDK.Demo
         {
             var svcNav = svcLocator.Resolve<INavigationService>();
             ButtonText = "Navigate To page 1";
-            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(ObservableVectorDemo)));
+            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(ListCollectionViewDemo)));
         }
     }
 }

@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="HDK.Demo.Views.Pages.ListCollectionViewDemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HDK.Demo.Views.Pages"
+    xmlns:common="using:HDK.Demo.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Back button and page title -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+ 
+            <StackPanel Orientation="Horizontal" Grid.Column="2">
+                <TextBlock Text="Items: " VerticalAlignment="Center" />
+                <TextBlock Text="{Binding LCV.Count}" VerticalAlignment="Center"/>
+
+                <Button Content="Add Many" Command="{Binding AddNewItemsCommand}"/>
+                <Button Content="Remove Selected" Command="{Binding RemoveItemsCommand}" CommandParameter="{Binding SelectedItem}"/>
+            </StackPanel>
+        </Grid>
+
+      <Grid Grid.Row="1">
+            <ListView ItemsSource="{Binding LCV}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+          <ListView.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapGrid Orientation = "Horizontal" />
+            </ItemsPanelTemplate>
+          </ListView.ItemsPanel>
+          
+        </ListView>
+      </Grid>
+
+    </Grid>
+</Page>

@@ -52,6 +52,8 @@ namespace HDK.Demo.Common
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled) return;
 
+            DataContext = null;
+
             //// Create an empty default view model
             //this.DefaultViewModel = new ObservableDictionary<String, Object>();
 

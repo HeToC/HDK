@@ -12,6 +12,6 @@
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Button Content="{Binding ButtonText}" Margin="561,270,0,381" Height="117" Width="277" Command="{Binding ButtonClickCommand}" />
         <TextBlock Text="{Binding NavigationBoundText}" Margin="321,17,415,646" />
-        <Frame x:Name="RootFrame"></Frame>
+        <Frame x:Name="RootFrame" DataContext="{x:Null}"></Frame>
     </Grid>
 </Page>

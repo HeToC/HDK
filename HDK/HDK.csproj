@@ -112,8 +112,11 @@
     <Compile Include="System\Collections\Generic\ObservableDictionary.cs" />
     <Compile Include="System\Collections\Generic\ObservableDictionaryChangedEventArgs.cs" />
     <Compile Include="System\Collections\Generic\ObservableVector.cs" />
+    <Compile Include="System\Collections\Generic\ObservableVectorView.cs" />
     <Compile Include="System\Collections\Generic\SparseList.cs" />
     <Compile Include="System\Collections\Generic\VectorChangedEventArgs.cs" />
+    <Compile Include="System\Collections\ICollectionViewEx.cs" />
+    <Compile Include="System\Collections\ListCollectionView.cs" />
     <Compile Include="System\ComponentModel\NPC\BindableBase.cs" />
     <Compile Include="System\ComponentModel\Attributes\ExportViewModelAttribute.cs" />
     <Compile Include="System\ComponentModel\Attributes\ExportViewAttribute.cs" />

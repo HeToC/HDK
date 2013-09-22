@@ -11,15 +11,15 @@ namespace HDK.Demo.Pages
     [ExportViewModel("#Demo #ObservableVector")]
     public class ObservableVectorDemoViewModel : ViewModelBase
     {
-        private ObservableVector<object> m_Vector;
-        public ObservableVector<object> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
+        private ObservableVector<object, List<object>> m_Vector;
+        public ObservableVector<object, List<object>> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
 
         public ICommand AddNewItemsCommand { get; set; }
 
         private Random rnd = new Random();
         public ObservableVectorDemoViewModel()
         {
-            Vector = new ObservableVector<object>();
+            Vector = new ObservableVector<object, List<object>>();
             for (int i = 0; i < 10; i++)
                 Vector.Add(string.Format("Base Item: {0}", i));
 
@@ -28,7 +28,7 @@ namespace HDK.Demo.Pages
                     int count = rnd.Next(5, 20);
                     for (int i = 0; i < count; i++)
                     {
-                        Vector.Add(string.Format("New Item: {0}", i));
+                        Vector.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
                     }
                 });
         }

@@ -114,6 +114,10 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Pages\ListCollectionViewDemoViewModel.cs" />
+    <Compile Include="Pages\ListCollectionViewDemo.xaml.cs">
+      <DependentUpon>ListCollectionViewDemo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ObservableVectorDemo.xaml.cs">
       <DependentUpon>ObservableVectorDemo.xaml</DependentUpon>
     </Compile>
@@ -150,6 +154,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Common\StandardStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\ListCollectionViewDemo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

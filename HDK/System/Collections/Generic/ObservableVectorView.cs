@@ -3,11 +3,13 @@
 namespace System.Collections.Generic
 {
     public class ObservableVectorView<TElement> : ObservableVectorView<TElement, List<TElement>>
+        where TElement : class, new()
     {
     }
 
     public class ObservableVectorView<TElement, TInner> : ObservableVector<TElement, TInner> 
         where TInner : IList, new()
+        where TElement : class, new()
     {
         int m_CursorPosition;
         TElement m_CurrentItem;

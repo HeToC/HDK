@@ -36,7 +36,11 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
           <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" Style="{StaticResource PageHeaderTextStyle}"/>
-          <Button Grid.Column="2" Content="AddItems" Command="{Binding AddNewItemsCommand}"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="2">
+                <TextBlock Text="Items: " VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Vector.Count}" VerticalAlignment="Center"/>
+                <Button Content="AddItems" Command="{Binding AddNewItemsCommand}"/>
+            </StackPanel>
         </Grid>
 
       <Grid Grid.Row="1">
