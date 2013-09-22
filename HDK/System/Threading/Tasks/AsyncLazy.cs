@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace System.Threading.Tasks
 {
+    /// <summary>
+    /// TODO: Test using weak reference
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class AsyncLazy<T> : INotifyPropertyChanged
     {
         #region Constructor default attribute values
@@ -274,9 +278,9 @@ namespace System.Threading.Tasks
             return task.Result;
         }
 
-        public void Start()
+        public async void Start()
         {
-            var dummy = this.m_adaptee.Value;
+            await this;
         }
 
         public TaskAwaiter<T> GetAwaiter() { return m_adoptedTask.GetAwaiter(); }
