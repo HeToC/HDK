@@ -114,7 +114,6 @@ namespace System.ComponentModel
 
         public void AttachViewModel(object viewObject, object parameter)
         {
-
             var viewModel = LocateViewModelForView(viewObject) as IViewModel;
             if (viewModel == null)
                 return;

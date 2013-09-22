@@ -18,6 +18,10 @@ namespace System.ComponentModel
         {
             this.RaisePropertyChanged(PropertyChanged, propertyName);
         }
+        protected void RaisePropertyChanged(params string[] propertyNames)
+        {
+            INotifyPropertyChangedExtensions.RaisePropertyChanged(this, PropertyChanged, propertyNames);
+        }
 
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
         {
