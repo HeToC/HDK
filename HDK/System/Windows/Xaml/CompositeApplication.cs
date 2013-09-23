@@ -20,10 +20,6 @@ namespace System.Windows.Xaml
 {
     public abstract class CompositeApplication : Application
     {
-
-        [Import]
-        public IServiceLocator ServiceLocator { get; set; }
-
         [Import]
         public INavigationService NavigationService { get; set; }
 
@@ -33,43 +29,16 @@ namespace System.Windows.Xaml
         [Import]
         public IApplicationLifeTimeService lifetimeService { get; set; }
 
-        private ICompositionProvider m_CompositionProvider;
+        private ICompositionProvider m_CompositionProvider = new MefCompositionProvider();
 
         public CompositeApplication()
         {
             Initialize();
         }
 
-        protected virtual ICompositionProvider CreateCompositionProvider(IServiceLocator serviceLocator)
-        {
-            return new MefCompositionProvider(serviceLocator);
-        }
-
-        protected virtual IServiceLocator CreateServiceLocator()
-        {
-            return new ServiceLocator();
-        }
-
-        protected virtual void InitializeServices(IServiceLocator serviceLocator, ICompositionProvider compositionProvider)
-        {
-            //serviceLocator.Add<INavigationService>(new NavigationService(), ConflictResolvingOptions.Skip);
-            //serviceLocator.Add<ILoggerService>(new DefaultLogger(), ConflictResolvingOptions.Skip);
-            serviceLocator.Add<ICompositionProvider>(() => compositionProvider, ConflictResolvingOptions.Skip);
-            serviceLocator.Add<IServiceLocator>(() => ServiceLocator, ConflictResolvingOptions.Replace);
-
-            compositionProvider.Compose(ServiceLocator);
-        }
-
         private void Initialize()
         {
             AttachEvents();
-
-            ServiceLocator = CreateServiceLocator();
-            m_CompositionProvider = CreateCompositionProvider(ServiceLocator);
-
-            InitializeServices(ServiceLocator, m_CompositionProvider);
-
-            IMVVMLocatorService mvvmLocator = ServiceLocator.Resolve<IMVVMLocatorService>();
 
             m_CompositionProvider.Compose(this);
         }

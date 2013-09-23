@@ -27,12 +27,11 @@ namespace System.Services
     public class StorageManagerService : IStorageManagerService
     {
         private ILoggerService Logger;
-
-        
+  
         [ImportingConstructor]
-        public StorageManagerService([Import] IServiceLocator locator)
+        public StorageManagerService([Import] ILoggerService logger)
         {
-            Logger = locator.Resolve<ILoggerService>();
+            Logger = logger;
         }
 
         public async Task<T> RetrieveAsync<T>(StorageFile file, DataContractSerializerSettings settings)

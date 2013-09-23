@@ -23,6 +23,7 @@ namespace System.ComponentModel
 
     [Shared]
     [ExportService("Default mvvm locator Service", "description", typeof(IMVVMLocatorService))]
+    
     public sealed class MEFMVVMLocatorService : IMVVMLocatorService
     {
         private IList<Lazy<IViewModel, ExportViewModelAttribute>> m_ViewModels { get; set; }
@@ -33,12 +34,13 @@ namespace System.ComponentModel
 
         [ImportingConstructor]
         public MEFMVVMLocatorService(
-            [Import]IServiceLocator svcLocator,
+            [Import]ILoggerService logger,
+            [Import]IDataConverterService dcs,
             [ImportMany]IList<Lazy<IView, ExportViewAttribute>> views,
             [ImportMany]IList<Lazy<IViewModel, ExportViewModelAttribute>> viewModels)
         {
-            m_dataConverterService = svcLocator.Resolve<IDataConverterService>();// dataConverterService;
-            m_Logger = svcLocator.Resolve<ILoggerService>();
+            m_dataConverterService = dcs;
+            m_Logger = logger;
 
             m_ViewModels = viewModels;
             m_Views = views;

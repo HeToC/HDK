@@ -31,14 +31,11 @@ namespace System.Services
         private ILoggerService Logger;
         private StorageFolder defaultStorageFolder = ApplicationData.Current.RoamingFolder;
 
-        //[ImportMany]
-        //public IList<Lazy<IPersistedObject, PersistedAttribute>> PersistedObjects { get; set; }
-
         [ImportingConstructor]
-        public SessionStateManagerService([Import] IServiceLocator locator)
+        public SessionStateManagerService([Import] ILoggerService logger, [Import]IStorageManagerService sms )//IServiceLocator locator)
         {
-            StorageServiceManager = locator.Resolve<IStorageManagerService>();
-            Logger = locator.Resolve<ILoggerService>();
+            StorageServiceManager = sms;
+            Logger = logger;
         }
 
         public async Task SaveAsync()

@@ -44,7 +44,7 @@ namespace System.Services
         public Type ServiceType { get; set; }
 
         public ExportServiceAttribute(string serviceName, string description, Type serviceType, int sequenceNumber = 0)
-            : base(typeof(IService))
+            : base(serviceType)
         {
             ServiceName = serviceName;
             Description = description;

@@ -15,14 +15,12 @@ namespace System.Services
 {
     public sealed class MefCompositionProvider : ICompositionProvider
     {
-        private IServiceLocator m_ServiceLocator;
         private ContainerConfiguration _configuration;
         private CompositionHost _container;
         private ConventionBuilder _conventions;
 
-        public MefCompositionProvider(IServiceLocator serviceLocator)
+        public MefCompositionProvider()
         {
-            m_ServiceLocator = serviceLocator;
         }
 
         public event Func<ICompositionProvider, ContainerConfiguration, List<Assembly>, bool> PreCreateContainer;
@@ -42,9 +40,7 @@ namespace System.Services
                     return _configuration;
 
                 // Add conventions.
-                Conventions.ForTypesDerivedFrom<IService>().Export<IService>().Shared(); //TODO BUG Dont work properly
-                //Conventions.ForTypesDerivedFrom<IServiceLocator>().Export<IServiceLocator>().Shared();
-
+                Conventions.ForTypesDerivedFrom<IService>().Export<IService>().Shared(); 
 
                 // Get a list of all the package assemblies.
                 var assemblies = Task.Run(async () =>
@@ -60,10 +56,6 @@ namespace System.Services
 
 
                 _configuration = new ContainerConfiguration();
-
-                _configuration = _configuration.WithProvider(new ValueExportDescriptorProvider(m_ServiceLocator));
-
-                //_configuration = _configuration.WithProvider(new InheritedExportDescriptorProvider());
 
                 // Let any customization occur
                 if (PreCreateContainer == null || !PreCreateContainer(this, _configuration, assemblies))
@@ -88,24 +80,11 @@ namespace System.Services
 
         public void Compose(object target)
         {
-            try
-            {
-                Container.SatisfyImports(target);
-            }
-            catch (Exception exc)
-            {
-                Debug.WriteLine(exc.Message);
-            }
+            Container.SatisfyImports(target);
         }
 
         public Lazy<T> GetInstance<T>() where T : class
         {
-            // Special case the service locator if we've already used the built-in one.
-            // This is done because the locator does not come through the MEF system itself 
-            // and therefore isn't registered with the host.
-            if ((typeof(T) == typeof(IServiceLocator) || typeof(T) == typeof(IServiceProvider)))
-                return new Lazy<T>(() => (T)m_ServiceLocator);
-
             return new Lazy<T>(() => Container.GetExport<T>());
         }
 
@@ -199,205 +178,6 @@ namespace System.Services
             }
 
             _container = null;
-        }
-
-        //private void Debug()
-        //{
-        //    var numberByName = new Dictionary<string, int>();
-        //    var number = 1;
-
-            
-
-        //    Debug.WriteLine("Exports");
-        //    foreach (ComposablePartDefinition cpDef in _container.Catalog.Parts.AsEnumerable())
-        //    {
-        //        if (cpDef.ExportDefinitions.Count() > 0)
-        //        {
-        //            Debug.WriteLine("{0,4}. {1}", number, cpDef);
-        //            foreach (ExportDefinition exDef in cpDef.ExportDefinitions)
-        //            {
-        //                numberByName.Add(exDef.ContractName, number);
-
-        //                Debug.WriteLine("        {0}", exDef.ContractName);
-        //                foreach (string key in exDef.Metadata.Keys)
-        //                {
-        //                    Debug.WriteLine("          {0}={1}", key, exDef.Metadata[key]);
-        //                }
-        //            }
-
-        //            ++number;
-        //        }
-        //    }
-        //    foreach (ComposablePart part in batch.PartsToAdd)
-        //    {
-        //        if (part.ExportDefinitions.Count() > 0)
-        //        {
-        //            Debug.WriteLine("{0,4}. {1}", number, "batched ComposablePart");
-        //            foreach (ExportDefinition exDef in part.ExportDefinitions)
-        //            {
-        //                numberByName.Add(exDef.ContractName, number);
-
-        //                Debug.WriteLine("        {0}", exDef.ContractName);
-        //                foreach (string key in exDef.Metadata.Keys)
-        //                {
-        //                    sw.WriteLine("          {0}={1}", key, exDef.Metadata[key]);
-        //                }
-        //            }
-
-        //            ++number;
-        //        }
-        //    }
-
-        //    Debug.WriteLine();
-        //    Debug.WriteLine("Imports");
-        //    foreach (ComposablePartDefinition cpDef in _container.Catalog.Parts.AsEnumerable())
-        //    {
-        //        if (cpDef.ImportDefinitions.Count() > 0)
-        //        {
-        //            Debug.WriteLine("  {0}", cpDef);
-        //            foreach (ImportDefinition imDef in cpDef.ImportDefinitions)
-        //            {
-        //                string exportingPartNumberMessage = "missing";
-        //                int exportingPartNumber;
-        //                if (numberByName.TryGetValue(imDef.ContractName, out exportingPartNumber))
-        //                {
-        //                    exportingPartNumberMessage = exportingPartNumber.ToString();
-        //                }
-
-        //                Debug.WriteLine("    {0} ({1})", imDef.ContractName, exportingPartNumberMessage);
-        //                //sw.WriteLine("      Cardinality={0}", imDef.Cardinality);
-        //                //sw.WriteLine("      Constraint='{0}'", imDef.Constraint);
-        //                //sw.WriteLine("      IsPrerequisite={0}", imDef.IsPrerequisite);
-        //                //sw.WriteLine("      IsRecomposable={0}", imDef.IsRecomposable);
-        //            }
-        //        }
-        //    }
-        //    Debug.WriteLine();
-        //    Debug.WriteLine("Metadata");
-        //    foreach (ComposablePartDefinition cpDef in _container.Catalog.Parts.AsEnumerable())
-        //    {
-        //        if (cpDef.Metadata.Count > 0)
-        //        {
-        //            Debug.WriteLine("  {0}", cpDef);
-        //            foreach (string key in cpDef.Metadata.Keys)
-        //            {
-        //                Debug.WriteLine("    {0}={1}", key, cpDef.Metadata[key]);
-        //            }
-        //        }
-        //    }
-        //}
-    }
-   
-    /// <summary>
-    /// This simple export provider searches the ServiceLocator for exports.
-    /// </summary>
-    sealed class ValueExportDescriptorProvider : ExportDescriptorProvider
-    {
-        private IServiceLocator m_ServiceLocator;
-
-        public ValueExportDescriptorProvider(IServiceLocator serviceLocator)
-            : base()
-        {
-            m_ServiceLocator = serviceLocator;
-        }
-
-        /// <summary>
-        /// Promise export descriptors for the specified export key.
-        /// </summary>
-        /// <param name="contract">The export key required by another component.</param><param name="descriptorAccessor">Accesses the other export descriptors present in the composition.</param>
-        /// <returns>
-        /// Promises for new export descriptors.
-        /// </returns>
-        /// <remarks>
-        /// A provider will only be queried once for each unique export key.
-        /// The descriptor accessor can only be queried immediately if the descriptor being promised is an adapter, such as
-        /// <see cref="T:System.Lazy`1"/>; otherwise, dependencies should only be queried within execution of the function provided
-        /// to the <see cref="T:System.Composition.Hosting.Core.ExportDescriptorPromise"/>. The actual descriptors provided should not close over or reference any
-        /// aspect of the dependency/promise structure, as this should be able to be GC'ed.
-        /// </remarks>
-        public override IEnumerable<ExportDescriptorPromise> GetExportDescriptors(CompositionContract contract, DependencyAccessor descriptorAccessor)
-        {
-
-            if (!contract.Equals(new CompositionContract(contract.ContractType)))
-                return NoExportDescriptors;
-
-            IEnumerable<ExportDescriptorPromise> result = NoExportDescriptors;
-
-            var providedTypes = m_ServiceLocator.RegisteredServices;
-
-            TypeInfo contractTypeInfo = contract.ContractType.GetTypeInfo();
-            var contractTypeInterfaces = contractTypeInfo.ImplementedInterfaces;
-            if (contractTypeInterfaces.Contains(typeof(IService)))
-            {
-                foreach (Type i in contractTypeInterfaces)
-                {
-                }
-            }
-            if (!providedTypes.ContainsKey(contract.ContractType))
-                return NoExportDescriptors;
-
-            var lazyValue = providedTypes[contract.ContractType];
-
-            Debug.WriteLine("ValueExportDescriptorProvider.GetExportDescriptors found out contract: {0}", contract.ContractType);
-
-            return new[]
-                       {
-                           new ExportDescriptorPromise(contract, "ValueExportDescriptorProvider", true, NoDependencies,
-                                                       _ => ExportDescriptor.Create((c, o) => lazyValue.Value, NoMetadata)),
-                       };
-        }
-    }
-
-
-    /// <summary>
-    /// Default export provider
-    /// </summary>
-    internal sealed class DefaultExportDescriptorProvider : ExportDescriptorProvider
-    {
-        internal const string DefaultContractNamePrefix = "Default++";
-
-        public override IEnumerable<ExportDescriptorPromise> GetExportDescriptors(CompositionContract contract, DependencyAccessor descriptorAccessor)
-        {
-            // Avoid trying to create defaults-of-defaults-of...
-            if (contract.ContractName != null && contract.ContractName.StartsWith(DefaultContractNamePrefix))
-                return NoExportDescriptors;
-
-            var implementations = descriptorAccessor.ResolveDependencies("test for default", contract, false);
-            if (implementations.Any())
-                return NoExportDescriptors;
-
-            var defaultImplementationDiscriminator = DefaultContractNamePrefix + (contract.ContractName ?? "");
-            IDictionary<string, object> copiedConstraints = null;
-            if (contract.MetadataConstraints != null)
-                copiedConstraints = contract.MetadataConstraints.ToDictionary(k => k.Key, k => k.Value);
-            var defaultImplementationContract = new CompositionContract(contract.ContractType, defaultImplementationDiscriminator, copiedConstraints);
-
-            CompositionDependency defaultImplementation;
-            if (!descriptorAccessor.TryResolveOptionalDependency("default", defaultImplementationContract, true, out defaultImplementation))
-                return NoExportDescriptors;
-
-            return new[] { new ExportDescriptorPromise(
-                contract,
-                "Default Implementation",
-                false,
-                () => new[] { defaultImplementation },
-                _ => {
-                    var defaultDescriptor = defaultImplementation.Target.GetDescriptor();
-                    return ExportDescriptor.Create((c, o) => defaultDescriptor.Activator(c, o), defaultDescriptor.Metadata);
-                })};
-        }
-    }
-
-    public class test : AttributedModelProvider
-    {
-        public override IEnumerable<Attribute> GetCustomAttributes(Type reflectedType, ParameterInfo parameter)
-        {
-            return new List<Attribute>();
-        }
-
-        public override IEnumerable<Attribute> GetCustomAttributes(Type reflectedType, MemberInfo member)
-        {
-            return new List<Attribute>();
         }
     }
 }

@@ -39,11 +39,14 @@ namespace System.Navigation
         ILoggerService m_Logger;
 
         [ImportingConstructor]
-        public NavigationService(IServiceLocator svcLocator)//IMVVMLocatorService mvvmLocatorService, IDataConverterService dataConverterService)
+        public NavigationService(
+            [Import]IMVVMLocatorService mvvmLocatorService,
+            [Import]IDataConverterService dataConverterService,
+            [Import]ILoggerService logger)
         {
-            m_MVVMLocatorService = svcLocator.Resolve<IMVVMLocatorService>();// mvvmLocatorService;
-            m_dataConverterService = svcLocator.Resolve<IDataConverterService>();// dataConverterService;
-            m_Logger = svcLocator.Resolve<ILoggerService>();
+            m_MVVMLocatorService = mvvmLocatorService;
+            m_dataConverterService = dataConverterService;
+            m_Logger = logger;
         }
 
         private Frame m_mainFrame;

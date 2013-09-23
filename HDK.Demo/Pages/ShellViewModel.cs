@@ -23,9 +23,8 @@ namespace HDK.Demo
         public string NavigationBoundText { get; set; }
 
         [ImportingConstructor]
-        public ShellViewModel(IServiceLocator svcLocator)
+        public ShellViewModel(INavigationService svcNav)
         {
-            var svcNav = svcLocator.Resolve<INavigationService>();
             ButtonText = "Navigate To page 1";
             ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(ListCollectionViewDemo)));
         }
