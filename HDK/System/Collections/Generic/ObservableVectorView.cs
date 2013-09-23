@@ -1,4 +1,7 @@
-﻿using Windows.UI.Xaml.Data;
+﻿using System.Collections.Specialized;
+using System.Linq;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml.Data;
 
 namespace System.Collections.Generic
 {
@@ -13,6 +16,37 @@ namespace System.Collections.Generic
     {
         int m_CursorPosition;
         TElement m_CurrentItem;
+
+        private object m_Source;
+        public object Source 
+        { 
+            get 
+            {
+                return m_Source; 
+            } 
+            set 
+            { 
+                OnSourceChanging();
+                m_Source = value;
+                RaisePropertyChanged();
+                OnSourceChanged();
+            } 
+        }
+
+        IEnumerable<TElement> m_sourceCollectionEnumerable;
+        IQueryable<TElement> m_sourceCollectionQueryable;
+        INotifyCollectionChanged m_sourceCollectionNotifyable;
+        IObservableVector<TElement> m_sourceVerctorNotifyable;
+
+        public virtual void OnSourceChanged()
+        {
+        }
+
+        public virtual void OnSourceChanging()
+        {
+        }
+
+        
 
         /// <summary>
         /// Occurs after the current item has changed.
