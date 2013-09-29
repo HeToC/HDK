@@ -149,6 +149,8 @@
     <Compile Include="System\Data\Fake\PersonName.cs" />
     <Compile Include="System\Data\Fake\PhoneNumber.cs" />
     <Compile Include="System\Data\IDataWrapper.cs" />
+    <Compile Include="System\Messaging\MessageHubService.cs" />
+    <Compile Include="System\Messaging\TaskExtensions.cs" />
     <Compile Include="System\Navigation\INavigationAware.cs" />
     <Compile Include="System\Navigation\INavigationService.cs" />
     <Compile Include="System\ComponentModel\ViewModelExtensions.cs" />
