@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <CollectionViewSource x:Key="CVS" Source="{Binding LCV}" />
+        <CollectionViewSource x:Key="CVS" Source="{Binding LCV}" IsSourceGrouped="True" />
     </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">

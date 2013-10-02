@@ -25,8 +25,10 @@ namespace System.Collections.Generic
         public ObservableVectorView(IEnumerable<TElement> source)
             : base(source)
         {
+            m_OriginalSource = source;
         }
 
+        private object m_OriginalSource;
         private object m_Source;
         public object Source
         {
@@ -241,8 +243,8 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private ObservableVector<TElement> m_CollectionGroups = new ObservableVector<TElement>();
-        public IObservableVector<TElement> CollectionGroups
+        private ObservableVector<object> m_CollectionGroups = new ObservableVector<object>();
+        public IObservableVector<object> CollectionGroups
         {
             get
             {
@@ -250,7 +252,10 @@ namespace System.Collections.Generic
             }
             set
             {
-                m_CollectionGroups = new ObservableVector<TElement>(value);
+                m_CollectionGroups = new ObservableVector<object>(
+                    from t in m_sourceCollectionEnumerable
+                    group t by t.GetType().FullName into g
+                    select g);
                 OnCollectionGroupChanged();
                 RaisePropertyChanged();
             }
@@ -258,7 +263,7 @@ namespace System.Collections.Generic
 
         private void OnCollectionGroupChanged()
         {
-
+            
         }
     }
 }
