@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="HDK.Demo.Views.Pages.ListCollectionViewDemo"
+    x:Class="HDK.Demo.Views.Pages.GroupedCollectionViewDemo"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:HDK.Demo.Views.Pages"
@@ -7,6 +7,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <CollectionViewSource x:Key="CVS" Source="{Binding LCV}" />
+    </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
 
@@ -26,7 +29,7 @@
  
             <StackPanel Orientation="Horizontal" Grid.Column="2">
                 <TextBlock Text="Items: " VerticalAlignment="Center" />
-                <TextBlock Text="{Binding LCV.Count}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Count, Source={StaticResource CVS}}" VerticalAlignment="Center"/>
 
                 <Button Content="Add Many" Command="{Binding AddNewItemsCommand}"/>
                 <Button Content="Remove Selected" Command="{Binding RemoveItemsCommand}" CommandParameter="{Binding SelectedItem}"/>
@@ -35,7 +38,7 @@
         </Grid>
 
       <Grid Grid.Row="1">
-            <ListView ItemsSource="{Binding LCV}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+            <ListView ItemsSource="{Binding Source={StaticResource CVS}}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
           <ListView.ItemsPanel>
             <ItemsPanelTemplate>
               <WrapGrid Orientation = "Horizontal" />

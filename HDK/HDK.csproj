@@ -133,6 +133,7 @@
     <Compile Include="System\ComponentModel\ViewModelBase.cs" />
     <Compile Include="System\ComponentModel\ViewModelLocatorService.cs" />
     <Compile Include="System\Data\Converters\ExportDataConverterAttribute.cs" />
+    <Compile Include="System\Data\DataViewSource.cs" />
     <Compile Include="System\Data\Deferred\DeferredLoadingPriorityAttribute.cs" />
     <Compile Include="System\Data\Deferred\DeferredDataLoadState.cs" />
     <Compile Include="System\Data\Deferred\IDeferredLoadingDataItem.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="System\Threading\Tasks\AsyncLazyStatus.cs" />
     <Compile Include="System\Designer.cs" />
     <Compile Include="System\UriExtensions.cs" />
+    <Compile Include="System\WeakDelegate.cs" />
     <Compile Include="System\Windows\Input\DelegateCommand.cs" />
     <Compile Include="System\Windows\Xaml\CompositeApplication.cs" />
     <Compile Include="System\Data\Converters\BooleanToVisibilityConverter.cs" />

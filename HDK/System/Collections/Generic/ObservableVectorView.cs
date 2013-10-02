@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml.Data;
@@ -8,6 +9,10 @@ namespace System.Collections.Generic
     public class ObservableVectorView<TElement> : ObservableVectorView<TElement, List<TElement>>
         where TElement : class, new()
     {
+        public ObservableVectorView(IEnumerable<TElement> source)
+            : base(source)
+        {
+        }
     }
 
     public class ObservableVectorView<TElement, TInner> : ObservableVector<TElement, TInner> 
@@ -17,36 +22,93 @@ namespace System.Collections.Generic
         int m_CursorPosition;
         TElement m_CurrentItem;
 
+        public ObservableVectorView(IEnumerable<TElement> source)
+            : base(source)
+        {
+        }
+
         private object m_Source;
-        public object Source 
-        { 
-            get 
+        public object Source
+        {
+            get
             {
-                return m_Source; 
-            } 
-            set 
-            { 
-                OnSourceChanging();
-                m_Source = value;
-                RaisePropertyChanged();
-                OnSourceChanged();
-            } 
+                return m_Source;
+            }
+            set
+            {
+                if (m_Source != value)
+                {
+                    OnSourceChanging();
+                    m_Source = value;
+                    RaisePropertyChanged();
+                    OnSourceChanged();
+                }
+            }
         }
 
         IEnumerable<TElement> m_sourceCollectionEnumerable;
         IQueryable<TElement> m_sourceCollectionQueryable;
         INotifyCollectionChanged m_sourceCollectionNotifyable;
         IObservableVector<TElement> m_sourceVerctorNotifyable;
+        ISupportIncrementalLoading m_sourceIncrementalLoading;
 
-        public virtual void OnSourceChanged()
+        //TODO Is it possible to use WeakDelegate ?
+        /// <summary>
+        /// 
+        /// 
+        /// Usage:
+        ///  protected override void OnSourceChanged()
+        ///  {
+        ///     base.OnSourceChanged();
+        ///     ........
+        ///     ........
+        ///     ........
+        ///  }
+        /// 
+        /// </summary>
+        protected virtual void OnSourceChanged()
+        {
+            m_sourceCollectionEnumerable = Source as IEnumerable<TElement>;
+            m_sourceCollectionQueryable = Source as IQueryable<TElement>;
+            m_sourceCollectionNotifyable = Source as INotifyCollectionChanged;
+            m_sourceVerctorNotifyable = Source as IObservableVector<TElement>;
+            m_sourceIncrementalLoading = Source as ISupportIncrementalLoading;
+
+            if (m_sourceCollectionNotifyable != null)
+                m_sourceCollectionNotifyable.CollectionChanged += OnSourceCollectionChanged;
+
+            if(m_sourceVerctorNotifyable!=null)
+                m_sourceVerctorNotifyable.VectorChanged += OnSourceVectorChanged;
+
+            OnCollectionGroupChanged();
+        }
+
+        /// <summary>
+        /// 
+        /// 
+        /// 
+        /// Usage:
+        ///  protected override void OnSourceChanging()
+        ///  {
+        ///     base.OnSourceChanging();
+        ///  }
+        /// </summary>
+        protected virtual void OnSourceChanging()
+        {
+            if (m_sourceCollectionNotifyable != null)
+                m_sourceCollectionNotifyable.CollectionChanged -= OnSourceCollectionChanged;
+
+            if (m_sourceVerctorNotifyable != null)
+                m_sourceVerctorNotifyable.VectorChanged -= OnSourceVectorChanged;
+        }
+
+        protected virtual void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
         }
 
-        public virtual void OnSourceChanging()
+        protected virtual void OnSourceVectorChanged(IObservableVector<TElement> sender, IVectorChangedEventArgs @e)
         {
         }
-
-        
 
         /// <summary>
         /// Occurs after the current item has changed.
@@ -179,5 +241,24 @@ namespace System.Collections.Generic
             return true;
         }
 
+        private ObservableVector<TElement> m_CollectionGroups = new ObservableVector<TElement>();
+        public IObservableVector<TElement> CollectionGroups
+        {
+            get
+            {
+                return m_CollectionGroups;
+            }
+            set
+            {
+                m_CollectionGroups = new ObservableVector<TElement>(value);
+                OnCollectionGroupChanged();
+                RaisePropertyChanged();
+            }
+        }
+
+        private void OnCollectionGroupChanged()
+        {
+
+        }
     }
 }

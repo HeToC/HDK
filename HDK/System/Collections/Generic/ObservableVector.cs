@@ -10,25 +10,33 @@ using Windows.UI.Xaml.Data;
 
 namespace System.Collections.Generic
 {
-    public class ObservableVector<TElement> : ObservableVector<TElement, List<object>>
-        where TElement : class, new()
+    public interface IObservableVector<out TElement, TInner> : IEnumerable<TElement>
     {
     }
 
-    public class ObservableVector<TElement, TInner> : BindableBase, IObservableVector<TElement>
+    public class ObservableVector<TElement> : ObservableVector<TElement, List<object>>
+        where TElement : class, new()
+    {
+        public ObservableVector(IEnumerable<TElement> source = null)
+            : base(source)
+        {
+        }
+    }
+
+    public class ObservableVector<TElement, TInner> : BindableBase, IObservableVector<TElement, TInner>, IObservableVector<TElement>
         where TInner : IList, new()
         where TElement : class, new()
     {
         private TInner inner;
 
-        public ObservableVector()
+        public ObservableVector(IEnumerable<TElement> source = null)
         {
-            inner = InitializeInnerContainer();
+            inner = InitializeInnerContainer(source);
         }
 
-        protected virtual TInner InitializeInnerContainer()
+        protected virtual TInner InitializeInnerContainer(IEnumerable<TElement> source = null)
         {
-            var tmp = (TInner)(new List<TElement>() as IList);
+            var tmp = (TInner)((source == null ? new List<TElement>() : new List<TElement>(source)) as IList);
             return tmp;
         }
 

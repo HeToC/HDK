@@ -13,8 +13,8 @@ namespace HDK.Demo.Pages
     [ExportViewModel("#Demo #ListCollectionView"), Shared]
     public class ListCollectionViewDemoViewModel : ViewModelBase
     {
-        private ListCollectionView m_LCV;
-        public ListCollectionView LCV { get { return m_LCV; } set { m_LCV = value; RaisePropertyChanged(); } }
+        private ObservableVectorView<object> m_LCV;
+        public ObservableVectorView<object> LCV { get { return m_LCV; } set { m_LCV = value; RaisePropertyChanged(); } }
         
         private object m_SelectedItem;
         public object SelectedItem {
@@ -30,11 +30,12 @@ namespace HDK.Demo.Pages
 
         public ICommand AddNewItemsCommand { get; set; }
         public ICommand RemoveItemsCommand { get; set; }
+        public ICommand RemoveAllItemsCommand { get; set; }
 
         private Random rnd = new Random();
         public ListCollectionViewDemoViewModel()
         {
-            LCV = new ListCollectionView(new List<string>());
+            LCV = new ObservableVectorView<object>(new List<string>());
             for (int i = 0; i < 10; i++)
                 LCV.Add(string.Format("Base Item: {0}", i));
 
@@ -50,6 +51,11 @@ namespace HDK.Demo.Pages
             RemoveItemsCommand = new DelegateCommand((s) =>
             {
                 LCV.Remove(s);
+            });
+
+            RemoveAllItemsCommand = new DelegateCommand((s) =>
+            {
+                LCV.Clear();
             });
         }
     }

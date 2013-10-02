@@ -26,7 +26,7 @@ namespace HDK.Demo
         public ShellViewModel(INavigationService svcNav)
         {
             ButtonText = "Navigate To page 1";
-            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(ListCollectionViewDemo)));
+            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(GroupedCollectionViewDemo)));
         }
     }
 }

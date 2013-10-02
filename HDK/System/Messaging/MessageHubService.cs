@@ -36,7 +36,8 @@ namespace System.Messaging
         /// <summary>
         ///     Dictionary(EventType, Dictionary(Sender, EventHandlerTaskFactories))
         /// </summary>
-        private readonly ConcurrentDictionary<Type, ConcurrentDictionary<object, ConcurrentBag<object>>> _hub;
+        /// was readonly
+        private ConcurrentDictionary<Type, ConcurrentDictionary<object, ConcurrentBag<object>>> _hub;
 
         public MessageHubService()
         {
@@ -224,6 +225,12 @@ namespace System.Messaging
                 });
 
             return tcs.Task;
+        }
+
+        //TODO: Proper Implementation
+        public void Dispose()
+        {
+            _hub = null;
         }
     }
 }
