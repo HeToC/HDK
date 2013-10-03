@@ -35,7 +35,7 @@ namespace System.Collections.Generic
         }
     }
 
-    public class ObservableVectorView<TElement, TInner> : ObservableVector<TElement, TInner> 
+    public class ObservableVectorView<TElement, TInner> : ObservableVector<TElement, TInner>
         where TInner : IList, new()
         where TElement : class, new()
     {
@@ -45,6 +45,8 @@ namespace System.Collections.Generic
         public ObservableVectorView(IEnumerable<TElement> source)
             : base(source)
         {
+
+            m_GroupDescriptors = new ObservableCollection<Func<TElement, string>>();
             Source = m_OriginalSource = source;
         }
 
@@ -161,20 +163,29 @@ namespace System.Collections.Generic
 
         private void HandleItemRemoved(int p1, object p2)
         {
-            
+            RebuildGroups();
+
+            RaiseVectorChanged(CollectionChange.Reset);
         }
 
         private void HandleSourceChanged()
         {
+            RebuildGroups();
+            RaiseVectorChanged(CollectionChange.Reset);
         }
 
         private void HandleItemAdded(int p1, object p2)
         {
+            RebuildGroups();
+
+            RaiseVectorChanged(CollectionChange.Reset);
         }
 
         protected virtual void OnSourceVectorChanged(IObservableVector<TElement> sender, IVectorChangedEventArgs @e)
         {
             RebuildGroups();
+
+            RaiseVectorChanged(CollectionChange.Reset);
         }
 
         /// <summary>
@@ -329,15 +340,21 @@ namespace System.Collections.Generic
         {
         }
 
+        private ObservableCollection<Func<TElement, string>> m_GroupDescriptors;
+        public ObservableCollection<Func<TElement, string>> GroupDescriptors { get { return m_GroupDescriptors; } set { m_GroupDescriptors = value; RaisePropertyChanged(); OnCollectionGroupChanged(); } }
         private void RebuildGroups()
         {
+            var first = GroupDescriptors.FirstOrDefault();
+            if (first == null)
+                return;
+
             var groups = from t in m_sourceCollectionEnumerable
-                         group t by t.GetType().FullName into g
+                         group t by first(t) into g
                          select new GroupInfo<string, TElement>(g);
+
             var tmp = groups.ToList();
             CollectionGroups = new ObservableVector<object>(tmp);
 
         }
-
     }
 }

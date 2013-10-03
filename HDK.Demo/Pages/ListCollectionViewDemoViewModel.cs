@@ -36,28 +36,33 @@ namespace HDK.Demo.Pages
         private Random rnd = new Random();
         public ListCollectionViewDemoViewModel()
         {
-            var src = new ObservableCollection<string>();
-            LCV = new ObservableVectorView<object>(src);
-            for (int i = 0; i < 10; i++)
-                LCV.Add(string.Format("Base Item: {0}", i));
+            var src = new ObservableCollection<SampleDataItem>();
+            LCV = new ObservableVectorView(src);
+            LCV.GroupDescriptors.Add((o) => (o as SampleDataItem).Group);
+
+            for (int i = 0; i < 100; i++)
+                src.Add(new SampleDataItem() { Group = string.Format("Grp {0}", rnd.Next(0, 20)), Value = string.Format("Base Item: {0}", i) });
 
             AddNewItemsCommand = new DelegateCommand(() =>
                 {
-                    int count = rnd.Next(5, 20);
+                    int count = rnd.Next(1, 50);
                     for (int i = 0; i < count; i++)
                     {
-                        LCV.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
+                        src.Add(new SampleDataItem() {
+                            Group = string.Format("Grp {0}", rnd.Next(0,20)),
+                            Value = string.Format("{0}", DateTime.Now.TimeOfDay)
+                        });
                     }
                 });
 
             RemoveItemsCommand = new DelegateCommand((s) =>
             {
-                LCV.Remove(s);
+                src.Remove((SampleDataItem)s);
             });
 
             RemoveAllItemsCommand = new DelegateCommand((s) =>
             {
-                LCV.Clear();
+                src.Clear();
             });
         }
     }

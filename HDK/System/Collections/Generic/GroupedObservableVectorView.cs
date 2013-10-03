@@ -7,11 +7,11 @@ using Windows.Foundation.Collections;
 
 namespace System.Collections.Generic
 {
-    public class GroupedObservableVectorView : GroupedObservableVectorView<string>
+    public class GroupedObservableVector : GroupedObservableVector<string>
     {
     }
 
-    public class GroupedObservableVectorView<TGroup> : ObservableVector<object>, IGroupInfo<TGroup, object>
+    public class GroupedObservableVector<TGroup> : ObservableVector<object>, IGroupInfo<TGroup, object>
     {
         public TGroup Key { get; set; }
 

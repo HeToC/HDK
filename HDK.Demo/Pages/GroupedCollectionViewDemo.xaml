@@ -14,16 +14,17 @@
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
 
 
-      <Grid.RowDefinitions>
+        <Grid.RowDefinitions>
             <RowDefinition Height="140"/>
             <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="0.5*" />
-        <ColumnDefinition Width="0.5*" />
-      </Grid.ColumnDefinitions>
-      
-      
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.5*" />
+        </Grid.ColumnDefinitions>
+
+
 
         <!-- Back button and page title -->
       <Grid Grid.Row="0" Grid.ColumnSpan="2">
@@ -43,62 +44,61 @@
             </StackPanel>
         </Grid>
 
-      <Grid Grid.Row="1" Grid.Column="0">
-         <ListView ItemsSource="{Binding LCV}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-          <ListView.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapGrid Orientation = "Horizontal" />
-            </ItemsPanelTemplate>
-          </ListView.ItemsPanel>
-        </ListView>
-      </Grid>
-      
-        
-      <Grid Grid.Row="1" Grid.Column="1">
-        <SemanticZoom>
-          <SemanticZoom.ZoomedInView>
-            <GridView ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False" 
-                ItemsSource="{Binding LCV}">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <ListView ItemsSource="{Binding LCV}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapGrid Orientation = "Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+        </Grid>
 
-              <GridView.ItemTemplate>
-              <DataTemplate>
-                <Grid Width="300" Height="100" Background="CadetBlue">
-                    <!--<TextBlock Margin="10,10,10,0" Text="{Binding Model}" VerticalAlignment="Top" FontSize="15"/>
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <SemanticZoom>
+                <SemanticZoom.ZoomedInView>
+                    <GridView ItemsSource="{Binding LCV}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False">
+
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="300" Height="100" Background="CadetBlue">
+                                    <!--<TextBlock Margin="10,10,10,0" Text="{Binding Model}" VerticalAlignment="Top" FontSize="15"/>
                     <TextBlock Margin="10,40,10,0" Text="{Binding Year}" VerticalAlignment="Top" FontSize="15"/>
                     <TextBlock Margin="10,70,10,0" Text="{Binding Color}" VerticalAlignment="Top" FontSize="15"/>-->
-                    <TextBlock Margin="10,10,10,0" Text="{Binding}" VerticalAlignment="Top" FontSize="15"/>
-                </Grid>
-              </DataTemplate>
-            </GridView.ItemTemplate>
-            <GridView.GroupStyle>
-              <GroupStyle>
-                <GroupStyle.ContainerStyle>
-                    <Style TargetType="GroupItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="GroupItem">
-                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                                        <Grid Margin="0,0,50,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"/>
-                                            <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding GroupItems}" Grid.Row="1"/>
-                                        </Grid>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </GroupStyle.ContainerStyle>
-                
-                  
-                    
+                                    <TextBlock Margin="10,10,10,0" Text="{Binding Value}" VerticalAlignment="Top" FontSize="15"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                        <GridView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="GroupItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="GroupItem">
+                                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                                        <Grid Margin="0,0,50,0">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"/>
+                                                            <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding}" Grid.Row="1"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+
+
+
                                 <GroupStyle.HeaderTemplate>
                                     <DataTemplate>
                                         <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Margin="0">
-                                            <TextBlock Text="{Binding Key}" Foreground="Gray" FontSize="25" Margin="5"></TextBlock>
+                                            <TextBlock Text="{Binding}" Foreground="Gray" FontSize="25" Margin="5"></TextBlock>
                                         </Grid>
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>
@@ -107,7 +107,7 @@
                                         <VariableSizedWrapGrid  Orientation="Vertical"></VariableSizedWrapGrid>
                                     </ItemsPanelTemplate>
                                 </GroupStyle.Panel>
-                <!--
+                                <!--
                 <GroupStyle.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock FontSize="20" Text="{Binding Group}" Foreground="White" Margin="15,0,0,0"/>
@@ -118,22 +118,22 @@
                         <VariableSizedWrapGrid Orientation="Vertical"/>
                     </ItemsPanelTemplate>
                 </GroupStyle.Panel>-->
-            </GroupStyle>
-          </GridView.GroupStyle>
-          </GridView>
-        </SemanticZoom.ZoomedInView>
-        <SemanticZoom.ZoomedOutView>
-    <GridView Name="ZoomedOutGridView" ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False">
-        <GridView.ItemTemplate>
-            <DataTemplate>
-                <Grid Height="150" Width="200" Background="CadetBlue">
-                    <TextBlock Margin="0" TextWrapping="Wrap" Text="{Binding Group}" FontSize="20" VerticalAlignment="Center"/>
-                </Grid>
-            </DataTemplate>
-        </GridView.ItemTemplate>
-    </GridView>
-</SemanticZoom.ZoomedOutView>
-        </SemanticZoom>
+                            </GroupStyle>
+                        </GridView.GroupStyle>
+                    </GridView>
+                </SemanticZoom.ZoomedInView>
+                <SemanticZoom.ZoomedOutView>
+                    <GridView Name="ZoomedOutGridView" ItemsSource="{Binding LCV.CollectionGroups}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="150" Width="200" Background="CadetBlue">
+                                    <TextBlock Margin="0" TextWrapping="Wrap" Text="{Binding Group}" FontSize="20" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </SemanticZoom.ZoomedOutView>
+            </SemanticZoom>
 
       </Grid>
 

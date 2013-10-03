@@ -137,6 +137,7 @@
       <DependentUpon>Page2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ShellViewModel.cs" />
+    <Compile Include="SampleDataItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
