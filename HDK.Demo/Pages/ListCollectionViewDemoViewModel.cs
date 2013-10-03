@@ -1,6 +1,7 @@
 ﻿using CollectionView;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Composition;
 using System.Linq;
@@ -35,7 +36,8 @@ namespace HDK.Demo.Pages
         private Random rnd = new Random();
         public ListCollectionViewDemoViewModel()
         {
-            LCV = new ObservableVectorView<object>(new List<string>());
+            var src = new ObservableCollection<string>();
+            LCV = new ObservableVectorView<object>(src);
             for (int i = 0; i < 10; i++)
                 LCV.Add(string.Format("Base Item: {0}", i));
 

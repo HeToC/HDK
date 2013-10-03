@@ -6,6 +6,26 @@ using Windows.UI.Xaml.Data;
 
 namespace System.Collections.Generic
 {
+    public class ObservableVectorView : ObservableVectorView<object>, ICollectionView
+    {
+        public ObservableVectorView(IEnumerable<object> source)
+            : base(source)
+        {
+        }
+
+
+        public bool HasMoreItems
+        {
+            get { return false; }
+        }
+
+        public global::Windows.Foundation.IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+        {
+            //throw new NotImplementedException();
+            return null;
+        }
+    }
+
     public class ObservableVectorView<TElement> : ObservableVectorView<TElement, List<TElement>>
         where TElement : class, new()
     {
@@ -25,7 +45,7 @@ namespace System.Collections.Generic
         public ObservableVectorView(IEnumerable<TElement> source)
             : base(source)
         {
-            m_OriginalSource = source;
+            Source = m_OriginalSource = source;
         }
 
         private object m_OriginalSource;
@@ -82,7 +102,7 @@ namespace System.Collections.Generic
             if(m_sourceVerctorNotifyable!=null)
                 m_sourceVerctorNotifyable.VectorChanged += OnSourceVectorChanged;
 
-            OnCollectionGroupChanged();
+            RebuildGroups();
         }
 
         /// <summary>
@@ -106,10 +126,55 @@ namespace System.Collections.Generic
 
         protected virtual void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+             switch (e.Action)
+             {
+                 case NotifyCollectionChangedAction.Add:
+                     if (e.NewItems.Count == 1)
+                     {
+                         HandleItemAdded(e.NewStartingIndex, e.NewItems[0]);
+                     }
+                     else
+                     {
+                         HandleSourceChanged();
+                     }
+                     break;
+                 case NotifyCollectionChangedAction.Remove:
+                     if (e.OldItems.Count == 1)
+                     {
+                         HandleItemRemoved(e.OldStartingIndex, e.OldItems[0]);
+                     }
+                     else
+                     {
+                         HandleSourceChanged();
+                     }
+                     break;
+                 case NotifyCollectionChangedAction.Move:
+                 case NotifyCollectionChangedAction.Replace:
+                 case NotifyCollectionChangedAction.Reset:
+                     HandleSourceChanged();
+                     break;
+                 default:
+                     throw new Exception("Unrecognized collection change notification: " + e.Action.ToString());
+             }
+            RebuildGroups();
+        }
+
+        private void HandleItemRemoved(int p1, object p2)
+        {
+            
+        }
+
+        private void HandleSourceChanged()
+        {
+        }
+
+        private void HandleItemAdded(int p1, object p2)
+        {
         }
 
         protected virtual void OnSourceVectorChanged(IObservableVector<TElement> sender, IVectorChangedEventArgs @e)
         {
+            RebuildGroups();
         }
 
         /// <summary>
@@ -243,19 +308,18 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private ObservableVector<object> m_CollectionGroups = new ObservableVector<object>();
+        private IObservableVector<object> m_CollectionGroups = null;
         public IObservableVector<object> CollectionGroups
         {
             get
             {
+                if (m_CollectionGroups == null)
+                    RebuildGroups();
                 return m_CollectionGroups;
             }
             set
             {
-                m_CollectionGroups = new ObservableVector<object>(
-                    from t in m_sourceCollectionEnumerable
-                    group t by t.GetType().FullName into g
-                    select g);
+                m_CollectionGroups = value;
                 OnCollectionGroupChanged();
                 RaisePropertyChanged();
             }
@@ -263,7 +327,17 @@ namespace System.Collections.Generic
 
         private void OnCollectionGroupChanged()
         {
-            
         }
+
+        private void RebuildGroups()
+        {
+            var groups = from t in m_sourceCollectionEnumerable
+                         group t by t.GetType().FullName into g
+                         select new GroupInfo<string, TElement>(g);
+            var tmp = groups.ToList();
+            CollectionGroups = new ObservableVector<object>(tmp);
+
+        }
+
     }
 }

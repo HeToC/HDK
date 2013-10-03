@@ -76,7 +76,7 @@ namespace System.Data
 
         public ICollectionView CreateView()
         {
-            return null;// new ObservableVectorView<object>(Source as IEnumerable<object>);
+            return new ObservableVectorView(Source as IEnumerable<object>);
         }
     }
 }
