@@ -56,9 +56,10 @@
 
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2">
-            <SemanticZoom>
+            <SemanticZoom ViewChangeStarted="OnSemanticZoomViewChangeStarted">
                 <SemanticZoom.ZoomedInView>
-                    <GridView ItemsSource="{Binding LCV}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False">
+                    <GridView ItemsSource="{Binding LCV}" x:Name="zoomedInGridView">
+                        <!--ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False"-->
 
                         <GridView.ItemTemplate>
                             <DataTemplate>
@@ -72,7 +73,7 @@
                         </GridView.ItemTemplate>
                         <GridView.GroupStyle>
                             <GroupStyle>
-                                <GroupStyle.ContainerStyle>
+                                <!--<GroupStyle.ContainerStyle>
                                     <Style TargetType="GroupItem">
                                         <Setter Property="Template">
                                             <Setter.Value>
@@ -91,7 +92,7 @@
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
-                                </GroupStyle.ContainerStyle>
+                                </GroupStyle.ContainerStyle>-->
 
 
 
@@ -123,7 +124,8 @@
                     </GridView>
                 </SemanticZoom.ZoomedInView>
                 <SemanticZoom.ZoomedOutView>
-                    <GridView Name="ZoomedOutGridView" ItemsSource="{Binding LCV.CollectionGroups}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False">
+                    <GridView Name="ZoomedOutGridView" ItemsSource="{Binding LCV.CollectionGroups}" >
+                        <!--ScrollViewer.IsHorizontalScrollChainingEnabled="False" ScrollViewer.IsVerticalScrollChainingEnabled="False"-->
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <Grid Height="150" Width="200" Background="CadetBlue">

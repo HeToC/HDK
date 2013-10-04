@@ -46,7 +46,7 @@ namespace System.Collections.Generic
             : base(source)
         {
 
-            m_GroupDescriptors = new ObservableCollection<Func<TElement, string>>();
+            m_GroupDescriptors = new ObservableCollection<Func<TElement, object>>();
             Source = m_OriginalSource = source;
         }
 
@@ -340,8 +340,8 @@ namespace System.Collections.Generic
         {
         }
 
-        private ObservableCollection<Func<TElement, string>> m_GroupDescriptors;
-        public ObservableCollection<Func<TElement, string>> GroupDescriptors { get { return m_GroupDescriptors; } set { m_GroupDescriptors = value; RaisePropertyChanged(); OnCollectionGroupChanged(); } }
+        private ObservableCollection<Func<TElement, object>> m_GroupDescriptors;
+        public ObservableCollection<Func<TElement, object>> GroupDescriptors { get { return m_GroupDescriptors; } set { m_GroupDescriptors = value; RaisePropertyChanged(); OnCollectionGroupChanged(); } }
         private void RebuildGroups()
         {
             var first = GroupDescriptors.FirstOrDefault();
@@ -350,7 +350,7 @@ namespace System.Collections.Generic
 
             var groups = from t in m_sourceCollectionEnumerable
                          group t by first(t) into g
-                         select new GroupInfo<string, TElement>(g);
+                         select new GroupInfo<object, TElement>(g);
 
             var tmp = groups.ToList();
             CollectionGroups = new ObservableVector<object>(tmp);

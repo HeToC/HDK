@@ -14,7 +14,7 @@ namespace System.Collections.Generic
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TElement"></typeparam>
-    public interface IGroupInfo<out TKey, TElement> : IGrouping<TKey, TElement>//, ICollectionViewGroup
+    public interface IGroupInfo<out TKey, out TElement> : IGrouping<TKey, TElement>, ICollectionViewGroup
         where TElement : class, new()
     {
     }
@@ -35,6 +35,11 @@ namespace System.Collections.Generic
             get { return this; }
         }
 
+        public GroupInfo(TKey key, IObservableVector<TElement> source)
+            : base(source)
+        {
+            Key = key;
+        }
         public GroupInfo(IGrouping<TKey, object> source)
             : base(source)
         {
