@@ -36,23 +36,36 @@ namespace HDK.Demo.Views.Pages
                 return;
             }
 
-        //    // get the selected group
-        //    IGroupInfo<object, object> selectedGroup = e.SourceItem.Item as IGroupInfo<object, object>;
+            // get the selected group
+            IGroupInfo<object, object> selectedGroup = e.SourceItem.Item as IGroupInfo<object, object>;
 
-        //    // identify the selected group in the zoomed in data source (here I do it by its name, YMMV)
-        //    IEnumerable<IGroupInfo<object, object>> myItemGroups = zoomedInGridView.ItemsSource as IEnumerable<IGroupInfo<object, object>>;
-        //    IGroupInfo<object, object> myGroup = myItemGroups.First((g) => { return g.Key == selectedGroup.Key; });
+            // identify the selected group in the zoomed in data source (here I do it by its name, YMMV)
+            var vectorView = zoomedInGridView.ItemsSource as ObservableVectorView<object>;
+            var myItemGroups = vectorView.CollectionGroups;
+            IGroupInfo<object, object> myGroup = myItemGroups.First((g) =>
+            {
+                var gi = g as IGroupInfo<object, object>;
+                if (gi == null)
+                    return false;
+                return gi.Key == selectedGroup.Key;
+            }) as IGroupInfo<object, object>;
 
-        //    // workaround: need to reset the scroll position first, otherwise ScrollIntoView won't work
-        //    SemanticZoomLocation zoomloc = new SemanticZoomLocation();
-        //    zoomloc.Bounds = new Windows.Foundation.Rect(0, 0, 1, 1);
-        //    zoomloc.Item = myItemGroups.First();//[0];
-        //    zoomedInGridView.MakeVisible(zoomloc);
+            if (myGroup != null)
+            {
+                object firstInGroup = myGroup.First();
+                object vvi = vectorView[vectorView.IndexOf(firstInGroup)];
 
-        //    // now we can scroll to the selected group in the zoomed in view
-        //    zoomedInGridView.ScrollIntoView(myGroup, ScrollIntoViewAlignment.Leading);
+                bool eq = vvi == firstInGroup;
 
-        //}
+                // workaround: need to reset the scroll position first, otherwise ScrollIntoView won't work
+                SemanticZoomLocation zoomloc = new SemanticZoomLocation();
+                zoomloc.Bounds = new Windows.Foundation.Rect(0, 0, 1, 1);
+                zoomloc.Item = firstInGroup;// myItemGroups.First();//[0];
+                zoomedInGridView.MakeVisible(zoomloc);
 
+                // now we can scroll to the selected group in the zoomed in view
+                zoomedInGridView.ScrollIntoView(firstInGroup, ScrollIntoViewAlignment.Leading);
+            }
+        }
     }
 }

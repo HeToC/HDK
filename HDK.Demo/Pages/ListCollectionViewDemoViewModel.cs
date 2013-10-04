@@ -37,11 +37,16 @@ namespace HDK.Demo.Pages
         public ListCollectionViewDemoViewModel()
         {
             var src = new ObservableCollection<SampleDataItem>();
-            LCV = new ObservableVectorView(src);
-            LCV.GroupDescriptors.Add((o) => (o as SampleDataItem).Group);
 
             for (int i = 0; i < 100; i++)
-                src.Add(new SampleDataItem() { Group = string.Format("Grp {0}", rnd.Next(0, 20)), Value = string.Format("Base Item: {0}", i) });
+                src.Add(new SampleDataItem()
+                {
+                    Group = string.Format("Grp {0}", rnd.Next(0, 20)),
+                    Value = Guid.NewGuid()
+                });
+
+            LCV = new ObservableVectorView(src);
+            LCV.GroupDescriptors.Add((o) => (o as SampleDataItem).Group);
 
             AddNewItemsCommand = new DelegateCommand(() =>
                 {
@@ -50,7 +55,7 @@ namespace HDK.Demo.Pages
                     {
                         src.Add(new SampleDataItem() {
                             Group = string.Format("Grp {0}", rnd.Next(0,20)),
-                            Value = string.Format("{0}", DateTime.Now.TimeOfDay)
+                            Value = Guid.NewGuid()
                         });
                     }
                 });

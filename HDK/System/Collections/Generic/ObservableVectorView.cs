@@ -104,6 +104,8 @@ namespace System.Collections.Generic
             if(m_sourceVerctorNotifyable!=null)
                 m_sourceVerctorNotifyable.VectorChanged += OnSourceVectorChanged;
 
+            base.InitializeInnerContainer(m_sourceCollectionEnumerable);
+
             RebuildGroups();
         }
 
