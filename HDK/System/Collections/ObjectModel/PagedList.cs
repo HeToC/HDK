@@ -1,17 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation.Collections;
 
 namespace System.Collections.ObjectModel
 {
-    public class PagedCollection<T> : IList<T>
+    
+    public class PagedList<T> : BindableBase, 
+        IList<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable,
+        INotifyPropertyChanged, INotifyCollectionChanged //, IObservableVector<T>
     {
         private T[][] internalPages = new T[0][];
-        private int pageCacheSize = int.MaxValue;
+        private int m_PageCacheSize = int.MaxValue;
         private List<int> recentlyAccessedPageList = new List<int>();
 
+        public PagedList(int pageSize = 100)
+        {
+            this.PageSize = pageSize;
+        }
+
+        [IndexerName("Item")]
         public T this[int index]
         {
             get
@@ -22,7 +35,6 @@ namespace System.Collections.ObjectModel
                     throw new ArgumentOutOfRangeException();
 
                 // If the page does not exist then return a placeholder
-
                 int pageIndex = index / PageSize;
                 T[] page = internalPages[pageIndex];
 
@@ -30,23 +42,19 @@ namespace System.Collections.ObjectModel
                     return default(T);
 
                 // Add the page to the recently accessed page list
-
                 AddRecentlyUsedPage(pageIndex);
 
                 // Return the element
-
                 int elementIndex = index % PageSize;
                 return page[elementIndex];
             }
             set
             {
                 // Validate that the index is within range
-
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException();
 
                 // If the page does not exist then create it
-
                 int pageIndex = index / PageSize;
                 T[] page = internalPages[pageIndex];
 
@@ -63,20 +71,38 @@ namespace System.Collections.ObjectModel
                 // Set the element
 
                 int elementIndex = index % PageSize;
+
+                T oldValue = this[index];
                 page[elementIndex] = value;
+
+                RaisePropertyChanged("Item[]");
+                if(oldValue == null)
+                    RaiseCollectionChanged(
+                            new NotifyCollectionChangedEventArgs(
+                                NotifyCollectionChangedAction.Add,
+                                value, index));
+                else
+                    RaiseCollectionChanged(
+                        new NotifyCollectionChangedEventArgs(
+                            NotifyCollectionChangedAction.Replace,
+                            value,
+                            oldValue,
+                            index));
             }
         }
 
+        private int m_Count;
         public int Count
         {
-            get;
-            private set;
+            get { return m_Count; }
+            private set { m_Count = value; RaisePropertyChanged(); }
         }
 
+        private int m_PageSize;
         public int PageSize
         {
-            get;
-            private set;
+            get { return m_PageSize; }
+            private set { m_PageSize = value; RaisePropertyChanged(); }
         }
 
         public bool IsReadOnly
@@ -91,18 +117,16 @@ namespace System.Collections.ObjectModel
         {
             get
             {
-                return pageCacheSize;
+                return m_PageCacheSize;
             }
             set
             {
-                // Validate that new value
-
                 if (value <= 0)
                     throw new ArgumentOutOfRangeException();
 
-                // Set the field
+                m_PageCacheSize = value;
 
-                pageCacheSize = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -136,21 +160,42 @@ namespace System.Collections.ObjectModel
                 internalPages.CopyTo(newInternalPages, 0);
                 internalPages = newInternalPages;
             }
+
+            RaisePropertyChanged("Count");
+            RaisePropertyChanged("Item[]");
         }
 
-        #region IList
-
-        public void Add(T item)
+        public virtual int Add(T item)
         {
             int newIndex = Count;
             UpdateCount(Count + 1, PageSize);
             this[newIndex] = item;
+            newIndex = this.IndexOf(item);
+            try
+            {
+                //RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+            return newIndex;
         }
 
-        public void Clear()
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        #region IList
+
+
+        public virtual void Clear()
         {
             Count = 0;
             internalPages = new T[0][];
+
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         public bool Contains(T item)
@@ -206,51 +251,49 @@ namespace System.Collections.ObjectModel
             return -1;
         }
 
-        public void Insert(int index, T item)
+        public virtual void Insert(int index, T item)
         {
             // Validate that the index is within range
-
             if (index < 0 || index > Count)
                 throw new ArgumentOutOfRangeException();
 
             // Ensure that there is enough room in the collection
-
             UpdateCount(Count + 1, PageSize);
 
             // If there are items after the inserted item them move them along
-
             Insert_MoveItems(index);
 
             // Insert the new item
-
             this[index] = item;
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+
         }
 
-        public bool Remove(T item)
+        public virtual bool Remove(T item)
         {
             int index = IndexOf(item);
-
+            
             if (index == -1)
                 return false;
 
             RemoveAt(index);
+
+            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
             return true;
         }
 
         public void RemoveAt(int index)
         {
             // Validate that the index is within range
-
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException();
 
             // Reduce the count (NB: We don't worry about contracting the internal page list)
-
             Count--;
 
             // Move all items after the removed item to the left
-
             Remove_MoveItems(index);
+            //RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         #endregion IList
@@ -318,8 +361,8 @@ namespace System.Collections.ObjectModel
                     }
 
                     // Move the rest of the items along
-
                     Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, endIndex - startIndex);
+                    RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
                 }
             }
         }
@@ -353,5 +396,85 @@ namespace System.Collections.ObjectModel
                 }
             }
         }
+
+        #region INotifyCollectionChanged
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        protected void RaiseCollectionChanged(NotifyCollectionChangedEventArgs ea)
+        {
+            var handler = CollectionChanged;
+            if (handler != null)
+                handler(this, ea);
+            //RaiseVectorChanged(new VectorChangedEventArgs(ea, ea.i
+        }
+
+        #endregion
+
+
+        //public event VectorChangedEventHandler<T> VectorChanged;
+        //protected void RaiseVectorChanged(VectorChangedEventArgs @ea)
+        //{
+        //    var handler = VectorChanged;
+        //    if (handler != null)
+        //        handler(this, ea);
+        //}
+
+        int IList.Add(object value)
+        {
+            return this.Add((T)value);
+        }
+
+        bool IList.Contains(object value)
+        {
+            return this.Contains((T)value);
+        }
+
+        int IList.IndexOf(object value)
+        {
+            return this.IndexOf((T)value);
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            this.Insert(index, (T)value);
+        }
+
+        bool IList.IsFixedSize
+        {
+            get { return false; }
+        }
+
+        void IList.Remove(object value)
+        {
+            this.Remove((T)value);
+        }
+
+        object IList.this[int index]
+        {
+            get
+            {
+                return this[index];
+            }
+            set
+            {
+                this[index] = (T)value;
+            }
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            this.CopyTo(array.OfType<T>().ToArray(), index);
+        }
+
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { return this; }
+        }
     }
+
 }

@@ -80,7 +80,15 @@ namespace System.Services
 
         public void Compose(object target)
         {
-            Container.SatisfyImports(target);
+            try
+            {
+                Container.SatisfyImports(target);
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc);
+                throw exc;
+            }
         }
 
         public Lazy<T> GetInstance<T>() where T : class

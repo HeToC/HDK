@@ -13,9 +13,9 @@ namespace System.Collections.ObjectModel
         // *** Constructor Tests ***
 
         [TestMethod]
-        public void Constructor_Void_CollectionIsEmpty()
+        public void PagedCollection_Constructor_Void_CollectionIsEmpty()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
 
             Assert.AreEqual(0, list.Count);
         }
@@ -23,9 +23,9 @@ namespace System.Collections.ObjectModel
         // *** Property Tests ***
 
         [TestMethod]
-        public void Indexer_SettingAndGettingReturnsSameElement_StartOfPage()
+        public void PagedCollection_Indexer_SettingAndGettingReturnsSameElement_StartOfPage()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[10] = 42;
 
@@ -33,9 +33,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Indexer_SettingAndGettingReturnsSameElement_MiddleOfPage()
+        public void PagedCollection_Indexer_SettingAndGettingReturnsSameElement_MiddleOfPage()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[15] = 42;
 
@@ -43,9 +43,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Indexer_SettingAndGettingReturnsSameElement_EndOfPage()
+        public void PagedCollection_Indexer_SettingAndGettingReturnsSameElement_EndOfPage()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[19] = 42;
 
@@ -53,9 +53,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Indexer_Getter_ReturnsPlaceholderBeforeSetElement()
+        public void PagedCollection_Indexer_Getter_ReturnsPlaceholderBeforeSetElement()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[10] = 42;
 
@@ -63,9 +63,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Indexer_Getter_ReturnsPlaceholderAfterSetElement()
+        public void PagedCollection_Indexer_Getter_ReturnsPlaceholderAfterSetElement()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[10] = 42;
 
@@ -73,9 +73,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Indexer_Getter_ReturnsPlaceholderFarAfterSetElement()
+        public void PagedCollection_Indexer_Getter_ReturnsPlaceholderFarAfterSetElement()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(2000, 100);
             list[10] = 42;
 
@@ -83,25 +83,25 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void IsReadOnly_IsFalse()
+        public void PagedCollection_IsReadOnly_IsFalse()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
 
             Assert.AreEqual(false, list.IsReadOnly);
         }
 
         [TestMethod]
-        public void PageCacheSize_IsInitiallyMaxValue()
+        public void PagedCollection_PageCacheSize_IsInitiallyMaxValue()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
 
             Assert.AreEqual(int.MaxValue, list.PageCacheSize);
         }
 
         [TestMethod]
-        public void PageCacheSize_SetterSetsValue()
+        public void PagedCollection_PageCacheSize_SetterSetsValue()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
 
             list.PageCacheSize = 5;
 
@@ -109,9 +109,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Add_AddsNewItemToList()
+        public void PagedCollection_Add_AddsNewItemToList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             list.Add(123);
@@ -121,9 +121,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Clear_ClearsTheList()
+        public void PagedCollection_Clear_ClearsTheList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             list.Clear();
@@ -132,9 +132,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Contains_ReturnsTrueIfItemInList()
+        public void PagedCollection_Contains_ReturnsTrueIfItemInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[2] = 8;
             list[10] = 42;
@@ -145,9 +145,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Contains_ReturnsFalseIfNotInList()
+        public void PagedCollection_Contains_ReturnsFalseIfNotInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[2] = 8;
             list[10] = 42;
@@ -158,9 +158,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void CopyTo_CopiesToDestinationArray()
+        public void PagedCollection_CopyTo_CopiesToDestinationArray()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 3);
             list[2] = 8;
             list[10] = 42;
@@ -176,9 +176,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void IndexOf_ReturnsIndexOfItemInList()
+        public void PagedCollection_IndexOf_ReturnsIndexOfItemInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[2] = 8;
             list[10] = 42;
@@ -189,9 +189,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void IndexOf_ReturnsMinusOneIfNotInList()
+        public void PagedCollection_IndexOf_ReturnsMinusOneIfNotInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
             list[2] = 8;
             list[10] = 42;
@@ -202,9 +202,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Insert_InsertsItemIntoList()
+        public void PagedCollection_Insert_InsertsItemIntoList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(20, 6);
             list[2] = 8;
             list[10] = 42;
@@ -218,9 +218,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Remove_RemovesItemFromList()
+        public void PagedCollection_Remove_RemovesItemFromList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(20, 6);
             list[2] = 8;
             list[5] = 10;
@@ -234,9 +234,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Remove_ReturnsTrueForItemInList()
+        public void PagedCollection_Remove_ReturnsTrueForItemInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(20, 6);
             list[2] = 8;
             list[5] = 10;
@@ -248,9 +248,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void Remove_ReturnsFalseForItemNotInList()
+        public void PagedCollection_Remove_ReturnsFalseForItemNotInList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(20, 6);
             list[2] = 8;
             list[5] = 10;
@@ -262,9 +262,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void RemoveAt_RemovesItemFromList()
+        public void PagedCollection_RemoveAt_RemovesItemFromList()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(20, 6);
             list[2] = 8;
             list[5] = 10;
@@ -278,27 +278,27 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void UpdateCount_UpdatesCountProperty()
+        public void PagedCollection_UpdateCount_UpdatesCountProperty()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             Assert.AreEqual(22, list.Count);
         }
 
         [TestMethod]
-        public void UpdateCount_UpdatesPageSizeProperty()
+        public void PagedCollection_UpdateCount_UpdatesPageSizeProperty()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             Assert.AreEqual(10, list.PageSize);
         }
 
         [TestMethod]
-        public void UpdateCount_ChangingPageNumber_PreservesExistingValues()
+        public void PagedCollection_UpdateCount_ChangingPageNumber_PreservesExistingValues()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             list[15] = 42;
@@ -309,9 +309,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void UpdateCount_ChangingPageSize_ClearsExistingValues()
+        public void PagedCollection_UpdateCount_ChangingPageSize_ClearsExistingValues()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 10);
 
             list[12] = 42;
@@ -323,9 +323,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void GetEnumerator_Generic_EnumeratesArray()
+        public void PagedCollection_GetEnumerator_Generic_EnumeratesArray()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 3);
             list[2] = 8;
             list[10] = 42;
@@ -341,9 +341,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void GetEnumerator_NonGeneric_EnumeratesArray()
+        public void PagedCollection_GetEnumerator_NonGeneric_EnumeratesArray()
         {
-            PagedCollection<int> list = new PagedCollection<int>();
+            PagedList<int> list = new PagedList<int>();
             list.UpdateCount(22, 3);
             list[2] = 8;
             list[10] = 42;
@@ -361,9 +361,9 @@ namespace System.Collections.ObjectModel
         // *** Behaviour Tests ***
 
         [TestMethod]
-        public void WithPageCacheSize_SettingMultipleItemsInSinglePage_CachesAllValues()
+        public void PagedCollection_WithPageCacheSize_SettingMultipleItemsInSinglePage_CachesAllValues()
         {
-            PagedCollection<int> list = new PagedCollection<int>() { PageCacheSize = 3 };
+            PagedList<int> list = new PagedList<int>() { PageCacheSize = 3 };
             list.UpdateCount(50, 10);
 
             list[11] = 5;
@@ -384,9 +384,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void WithPageCacheSize_SettingValues_ClearsLeastRecentPages()
+        public void PagedCollection_WithPageCacheSize_SettingValues_ClearsLeastRecentPages()
         {
-            PagedCollection<int> list = new PagedCollection<int>() { PageCacheSize = 3 };
+            PagedList<int> list = new PagedList<int>() { PageCacheSize = 3 };
             list.UpdateCount(50, 10);
 
             list[15] = 5;
@@ -403,9 +403,9 @@ namespace System.Collections.ObjectModel
         }
 
         [TestMethod]
-        public void WithPageCacheSize_GettingValues_PushesPageUpInRecentlyUsedPagesList()
+        public void PagedCollection_WithPageCacheSize_GettingValues_PushesPageUpInRecentlyUsedPagesList()
         {
-            PagedCollection<int> list = new PagedCollection<int>() { PageCacheSize = 3 };
+            PagedList<int> list = new PagedList<int>() { PageCacheSize = 3 };
             list.UpdateCount(50, 10);
 
             list[15] = 5;

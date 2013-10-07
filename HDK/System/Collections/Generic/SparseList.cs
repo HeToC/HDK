@@ -14,13 +14,13 @@ namespace System.Collections.Generic
     /// in pages.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SparseList<T> where T : class
+    public class SparseList<T>
     {
         private readonly int _pageSize;
         private readonly ISparsePageList<T> _allocatedPages;
         private ISparsePage<T> _currentPage;
 
-        public SparseList(int pageSize)
+        public SparseList(int pageSize = 100)
         {
             _pageSize = pageSize;
             _allocatedPages = CreatePageList(_pageSize);

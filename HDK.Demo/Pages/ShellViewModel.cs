@@ -1,4 +1,5 @@
-﻿using HDK.Demo.Views.Pages;
+﻿using HDK.Demo.Pages;
+using HDK.Demo.Views.Pages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,7 +27,7 @@ namespace HDK.Demo
         public ShellViewModel(INavigationService svcNav)
         {
             ButtonText = "Navigate To page 1";
-            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(GroupedCollectionViewDemo)));
+            ButtonClickCommand = new DelegateCommand(() => svcNav.Navigate(typeof(PagedListDemo)));
         }
     }
 }

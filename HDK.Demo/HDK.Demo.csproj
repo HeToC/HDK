@@ -107,6 +107,10 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Pages\PagedListDemo.xaml.cs">
+      <DependentUpon>PagedListDemo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PagedListDemoViewModel.cs" />
     <Compile Include="Pages\GroupedCollectionViewDemo.xaml.cs">
       <DependentUpon>GroupedCollectionViewDemo.xaml</DependentUpon>
     </Compile>
@@ -164,6 +168,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\ObservableVectorDemo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\PagedListDemo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
