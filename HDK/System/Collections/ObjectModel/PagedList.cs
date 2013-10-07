@@ -12,16 +12,19 @@ namespace System.Collections.ObjectModel
 {
     
     public class PagedList<T> : BindableBase, 
-        IList<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable,
-        INotifyPropertyChanged, INotifyCollectionChanged //, IObservableVector<T>
+        IList<T>//,// ICollection<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable,
+        //INotifyPropertyChanged, INotifyCollectionChanged , IObservableVector<T>
     {
         private T[][] internalPages = new T[0][];
         private int m_PageCacheSize = int.MaxValue;
         private List<int> recentlyAccessedPageList = new List<int>();
 
-        public PagedList(int pageSize = 100)
+        private ReenterancyMonitor<PagedList<T>> m_monitor;
+
+        public PagedList(int pageSize = 10)
         {
             this.PageSize = pageSize;
+            m_monitor = new ReenterancyMonitor<PagedList<T>>(this);
         }
 
         [IndexerName("Item")]
@@ -30,7 +33,6 @@ namespace System.Collections.ObjectModel
             get
             {
                 // Validate that the index is within range
-
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException();
 
@@ -76,18 +78,18 @@ namespace System.Collections.ObjectModel
                 page[elementIndex] = value;
 
                 RaisePropertyChanged("Item[]");
-                if(oldValue == null)
-                    RaiseCollectionChanged(
-                            new NotifyCollectionChangedEventArgs(
-                                NotifyCollectionChangedAction.Add,
-                                value, index));
-                else
-                    RaiseCollectionChanged(
-                        new NotifyCollectionChangedEventArgs(
-                            NotifyCollectionChangedAction.Replace,
-                            value,
-                            oldValue,
-                            index));
+                //if(oldValue == null)
+                //    OnCollectionChanged(
+                //            new NotifyCollectionChangedEventArgs(
+                //                NotifyCollectionChangedAction.Add,
+                //                value, index));
+                //else
+                //    OnCollectionChanged(
+                //        new NotifyCollectionChangedEventArgs(
+                //            NotifyCollectionChangedAction.Replace,
+                //            value,
+                //            oldValue,
+                //            index));
             }
         }
 
@@ -167,18 +169,20 @@ namespace System.Collections.ObjectModel
 
         public virtual int Add(T item)
         {
+//            CheckReentrancy();
+
             int newIndex = Count;
             UpdateCount(Count + 1, PageSize);
             this[newIndex] = item;
             newIndex = this.IndexOf(item);
-            try
-            {
-                //RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
+//            try
+//            {
+ //               OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, newIndex));
+ //           }
+//            catch (Exception exc)
+//            {
+//                throw exc;
+//            }
             return newIndex;
         }
 
@@ -192,10 +196,11 @@ namespace System.Collections.ObjectModel
 
         public virtual void Clear()
         {
+//            CheckReentrancy();
             Count = 0;
             internalPages = new T[0][];
 
-            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+ //           OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         public bool Contains(T item)
@@ -253,6 +258,8 @@ namespace System.Collections.ObjectModel
 
         public virtual void Insert(int index, T item)
         {
+ //           CheckReentrancy();
+
             // Validate that the index is within range
             if (index < 0 || index > Count)
                 throw new ArgumentOutOfRangeException();
@@ -265,7 +272,7 @@ namespace System.Collections.ObjectModel
 
             // Insert the new item
             this[index] = item;
-            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+//            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
 
         }
 
@@ -277,23 +284,25 @@ namespace System.Collections.ObjectModel
                 return false;
 
             RemoveAt(index);
-
-            RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
             return true;
         }
 
         public void RemoveAt(int index)
         {
+//            CheckReentrancy();
+
             // Validate that the index is within range
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException();
 
+            var item = this[index];
             // Reduce the count (NB: We don't worry about contracting the internal page list)
             Count--;
 
+
             // Move all items after the removed item to the left
             Remove_MoveItems(index);
-            //RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+//            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
         }
 
         #endregion IList
@@ -362,7 +371,7 @@ namespace System.Collections.ObjectModel
 
                     // Move the rest of the items along
                     Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, endIndex - startIndex);
-                    RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
+  //                  OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
                 }
             }
         }
@@ -397,84 +406,149 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        #region INotifyCollectionChanged
+        //#region INotifyCollectionChanged
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-        protected void RaiseCollectionChanged(NotifyCollectionChangedEventArgs ea)
-        {
-            var handler = CollectionChanged;
-            if (handler != null)
-                handler(this, ea);
-            //RaiseVectorChanged(new VectorChangedEventArgs(ea, ea.i
-        }
-
-        #endregion
-
-
-        //public event VectorChangedEventHandler<T> VectorChanged;
-        //protected void RaiseVectorChanged(VectorChangedEventArgs @ea)
+        //public event NotifyCollectionChangedEventHandler CollectionChanged;
+        //protected void OnCollectionChanged(NotifyCollectionChangedEventArgs ea)
         //{
-        //    var handler = VectorChanged;
+            
+        //    var handler = CollectionChanged;
         //    if (handler != null)
-        //        handler(this, ea);
+        //        using (BlockReentrancy())
+        //            handler(this, ea);
+        //    //RaiseVectorChanged(new VectorChangedEventArgs(ea, ea.i
         //}
 
-        int IList.Add(object value)
-        {
-            return this.Add((T)value);
-        }
+        //#endregion
 
-        bool IList.Contains(object value)
-        {
-            return this.Contains((T)value);
-        }
 
-        int IList.IndexOf(object value)
-        {
-            return this.IndexOf((T)value);
-        }
+        ////public event VectorChangedEventHandler<T> VectorChanged;
+        ////protected void RaiseVectorChanged(VectorChangedEventArgs @ea)
+        ////{
+        ////    var handler = VectorChanged;
+        ////    if (handler != null)
+        ////        handler(this, ea);
+        ////}
 
-        void IList.Insert(int index, object value)
-        {
-            this.Insert(index, (T)value);
-        }
+        //int IList.Add(object value)
+        //{
+        //    return this.Add((T)value);
+        //}
 
-        bool IList.IsFixedSize
-        {
-            get { return false; }
-        }
+        //bool IList.Contains(object value)
+        //{
+        //    return this.Contains((T)value);
+        //}
 
-        void IList.Remove(object value)
-        {
-            this.Remove((T)value);
-        }
+        //int IList.IndexOf(object value)
+        //{
+        //    return this.IndexOf((T)value);
+        //}
 
-        object IList.this[int index]
-        {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                this[index] = (T)value;
-            }
-        }
+        //void IList.Insert(int index, object value)
+        //{
+        //    this.Insert(index, (T)value);
+        //}
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            this.CopyTo(array.OfType<T>().ToArray(), index);
-        }
+        //bool IList.IsFixedSize
+        //{
+        //    get { return false; }
+        //}
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        //void IList.Remove(object value)
+        //{
+        //    this.Remove((T)value);
+        //}
 
-        object ICollection.SyncRoot
-        {
-            get { return this; }
-        }
+        //object IList.this[int index]
+        //{
+        //    get
+        //    {
+        //        return this[index];
+        //    }
+        //    set
+        //    {
+        //        this[index] = (T)value;
+        //    }
+        //}
+
+        //void ICollection.CopyTo(Array array, int index)
+        //{
+        //    this.CopyTo(array.OfType<T>().ToArray(), index);
+        //}
+
+        //bool ICollection.IsSynchronized
+        //{
+        //    get { return true; }
+        //}
+
+        //object ICollection.SyncRoot
+        //{
+        //    get { return m_monitor; }
+        //}
+
+
+        ///// <summary>
+
+        ///// Disallow reentrant attempts to change this collection. E.g. a event handler 
+
+        ///// of the CollectionChanged event is not allowed to make changes to this collection. 
+
+        ///// </summary>
+
+        ///// <remarks> 
+
+        ///// typical usage is to wrap e.g. a OnCollectionChanged call with a using() scope:
+
+        ///// <code>
+
+        /////         using (BlockReentrancy())
+
+        /////         { 
+
+        /////             CollectionChanged(this, new NotifyCollectionChangedEventArgs(action, item, index));
+
+        /////         } 
+
+        ///// </code> 
+
+        ///// </remarks>
+
+        //protected IDisposable BlockReentrancy()
+        //{
+
+        //    m_monitor.Enter();
+
+        //    return m_monitor;
+
+        //}
+
+
+
+        ///// <summary> Check and assert for reentrant attempts to change this collection. </summary> 
+
+        ///// <exception cref="InvalidOperationException"> raised when changing the collection 
+
+        ///// while another collection change is still being notified to other listeners </exception>
+
+        //protected void CheckReentrancy()
+        //{
+        //    if (m_monitor.Busy)
+        //    {
+
+        //        // we can allow changes if there's only one listener - the problem 
+
+        //        // only arises if reentrant changes make the original event args
+
+        //        // invalid for later listeners.  This keeps existing code working 
+
+        //        // (e.g. Selector.SelectedItems). 
+
+        //        if ((CollectionChanged != null) && (CollectionChanged.GetInvocationList().Length > 1))
+        //            throw new InvalidOperationException();
+        //    }
+
+        //}
     }
 
 }

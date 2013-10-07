@@ -62,4 +62,44 @@ namespace System.Windows.Input
         }
 
     }
+    public class DelegateCommandSync : ICommand
+    {
+        protected readonly Predicate<object> _canExecute;
+        protected Action _asyncExecute;
+
+        public event EventHandler CanExecuteChanged;
+
+        public DelegateCommandSync(Action syncExecute, Predicate<object> canExecute = null)
+        {
+            _asyncExecute = syncExecute;
+            _canExecute = canExecute;
+        }
+
+
+        public bool CanExecute(object parameter)
+        {
+            if (_canExecute == null)
+            {
+                return true;
+            }
+
+            return _canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _asyncExecute();
+        }
+
+
+        //TODO: Make it protected later and raise this event on proper condition occured
+        public void RaiseCanExecuteChanged()
+        {
+            var handler = this.CanExecuteChanged;
+
+            if (handler != null)
+                handler(this, new EventArgs());
+        }
+
+    }
 }

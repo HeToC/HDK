@@ -23,10 +23,11 @@
           <!-- Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/ !-->
           <TextBlock x:Name="pageTitle" Grid.Column="1" Text="PagedList demo" Style="{StaticResource PageHeaderTextStyle}"/>
           <StackPanel Orientation="Horizontal" Grid.Column="2">
-            <TextBlock Text="Items: " VerticalAlignment="Center" />
-            <TextBlock Text="{Binding Vector.Count}" VerticalAlignment="Center"/>
-            <Button Content="AddItems" Command="{Binding AddNewItemsCommand}"/>
-            <Button Content="RemoveSelected" Command="{Binding RemoveSelectedCommand}"/>
+                <TextBlock Text="Items: " VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Vector.Count}" VerticalAlignment="Center"/>
+                <Button Content="Add ONE" Command="{Binding AddOneItemCommand}" />
+                <Button Content="AddItems" Command="{Binding AddNewItemsCommand}"/>
+                <Button Content="RemoveSelected" Command="{Binding RemoveSelectedCommand}"/>
           </StackPanel>
         </Grid>
 
