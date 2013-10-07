@@ -101,7 +101,7 @@ namespace System.Threading.Tasks
             set
             {
                 m_DefaultValue = value;
-                this.RaisePropertyChanged(this.PropertyChanged, "DefaultValue");
+                this.InvokePropertyChanged();
             }
         }
 
@@ -118,7 +118,7 @@ namespace System.Threading.Tasks
             {
                 m_Value = value;
 
-                this.RaisePropertyChanged(this.PropertyChanged, "Value");
+                this.InvokePropertyChanged();
             }
         }
 
@@ -254,19 +254,15 @@ namespace System.Threading.Tasks
                 var scheduler = (SynchronizationContext.Current == null) ? TaskScheduler.Current : TaskScheduler.FromCurrentSynchronizationContext();
                 task.ContinueWith(t =>
                 {
-                    var propertyChanged = PropertyChanged;
-                    if (propertyChanged != null)
+                    this.InvokePropertyChanged("Status", "IsCompleted", "IsValueCreated");
+                    if (t.IsCanceled)
+                        this.InvokePropertyChanged("IsCanceled");
+                    else if (t.IsFaulted)
+                        this.InvokePropertyChanged("IsFaulted", "Exception", "InnerException", "ErrorMessage");
+                    else
                     {
-                        this.RaisePropertyChanged(propertyChanged, "Status", "IsCompleted", "IsValueCreated");
-                        if (t.IsCanceled)
-                            this.RaisePropertyChanged(propertyChanged, "IsCanceled");
-                        else if (t.IsFaulted)
-                            this.RaisePropertyChanged(propertyChanged, "IsFaulted", "Exception", "InnerException", "ErrorMessage");
-                        else
-                        {
-                            Value = t.Result;
-                            this.RaisePropertyChanged(propertyChanged, "IsSuccessfullyCompleted", "Result", "Value");
-                        }
+                        Value = t.Result;
+                        this.InvokePropertyChanged("IsSuccessfullyCompleted", "Result", "Value");
                     }
 
                 },
@@ -285,6 +281,27 @@ namespace System.Threading.Tasks
 
         public TaskAwaiter<T> GetAwaiter() { return m_adoptedTask.GetAwaiter(); }
 
+        #region INotifyPropertyChanged
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary> 
+        /// Notifies listeners that a property value has changed. 
+        /// </summary> 
+        /// <param name="propertyName">Name of the property used to notify listeners.  This 
+        /// value is optional and can be provided automatically when invoked from compilers 
+        /// that support <see cref="CallerMemberNameAttribute"/>.</param> 
+        protected void InvokePropertyChanged([CallerMemberName] string primaryPropertyName = null, params string[] secondaryPropertyNames)
+        {
+            var eventHandler = this.PropertyChanged;
+            if (eventHandler != null)
+            {
+                eventHandler(this, new PropertyChangedEventArgs(primaryPropertyName));
+
+                foreach (string propertyName in secondaryPropertyNames)
+                    eventHandler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
     }
 }
