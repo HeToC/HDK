@@ -118,6 +118,7 @@
     <Compile Include="System\Collections\Generic\VectorChangedEventArgs.cs" />
     <Compile Include="System\Collections\ICollectionViewEx.cs" />
     <Compile Include="System\Collections\ListCollectionView.cs" />
+    <Compile Include="System\Collections\ObjectModel\PagedCollection.cs" />
     <Compile Include="System\ComponentModel\Attributes\ExportViewAttribute.cs" />
     <Compile Include="System\ComponentModel\Attributes\ExportViewModelAttribute.cs" />
     <Compile Include="System\ComponentModel\Attributes\NavigationBoundPropertyAttribute.cs" />
