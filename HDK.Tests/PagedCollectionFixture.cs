@@ -205,16 +205,16 @@ namespace System.Collections.ObjectModel
         public void PagedCollection_Insert_InsertsItemIntoList()
         {
             PagedList<int> list = new PagedList<int>();
-            list.UpdateCount(95, 10);
-            list[1] = 8;
-            list[95] = 42;
+            for (int i = 0; i <= 24; i++)
+                list.Add(i);
 
-            list.Insert(4, 123);
+            Assert.AreEqual(25, list.Count);
+            list.Insert(4, -1);
+            Assert.AreEqual(26, list.Count);
 
-            Assert.AreEqual(21, list.Count);
-            Assert.AreEqual(8, list[2]);
-            Assert.AreEqual(123, list[5]);
-            Assert.AreEqual(42, list[11]);
+            Assert.AreEqual(0, list[0]);
+            Assert.AreEqual(24, list[25]);
+            Assert.AreEqual(-1, list[4]);
         }
 
         [TestMethod]

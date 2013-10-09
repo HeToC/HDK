@@ -356,7 +356,7 @@ namespace System.Collections.ObjectModel
                 if (page != null)
                 {
                     int startIndex = pageIndex == insertPage ? insertIndex : 0;
-                    int endIndex = pageIndex == internalPages.Length-1 ? (Count - 1) % PageSize - 1 : PageSize - 1;
+                    int endIndex = pageIndex == internalPages.Length - 1 ? (Count - 1) % PageSize - 1 : PageSize - 1;
 
                     // If we need to copy the last element into the next page then do this
 
@@ -366,8 +366,23 @@ namespace System.Collections.ObjectModel
                         this[lastItemIndex + 1] = this[lastItemIndex];
                     }
 
+                    int length = endIndex - startIndex;
+                    if (length != PageSize - 1 && pageIndex != insertPage)
+                        length++;
+
                     // Move the rest of the items along
-                    Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, endIndex - startIndex);
+                    Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, length);
+
+                    //if (endIndex == PageSize-1)
+                    //{
+                    //    //move last element to next page
+                    //    T element = page[endIndex];
+                    //    T[] nextPage = internalPages[pageIndex + 1];
+                    //    nextPage[0] = element;
+                    //}
+
+
+
   //                  OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
                 }
             }
