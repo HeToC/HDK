@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -61,6 +62,7 @@ namespace System.Collections.ObjectModel
 
         private void SetItem(int index, T value)
         {
+            Debug.WriteLine("Trying to SetItem: Index: {0} Count: {1} Value {2}", index, Count, value);
             // Validate that the index is within range
             if (index < 0 || index >= Count)
                 throw new ArgumentOutOfRangeException();
@@ -87,7 +89,7 @@ namespace System.Collections.ObjectModel
             page[elementIndex] = value;
 
             RaisePropertyChanged("Item[]");
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue, index));
+            //OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue, index));
         }
 
         private int m_Count;
@@ -350,44 +352,48 @@ namespace System.Collections.ObjectModel
 
         private void Insert_MoveItems(int index)
         {
-            int insertPage = index / PageSize;
-            int insertIndex = index % PageSize;
-
-            // Move full pages (starting at the end)
-
-            for (int pageIndex = internalPages.Length - 1; pageIndex >= insertPage; pageIndex--)
+            try
             {
-                T[] page = internalPages[pageIndex];
+                int insertPage = index / PageSize;
+                int insertIndex = index % PageSize;
 
-                if (page != null)
+                // Move full pages (starting at the end)
+                for (int pageIndex = internalPages.Length - 1; pageIndex >= insertPage; pageIndex--)
                 {
-                    int startIndex = pageIndex == insertPage ? insertIndex : 0;
-                    int endIndex = pageIndex == internalPages.Length - 1 ? (Count - 1) % PageSize - 1 : PageSize - 1;
+                    bool isLastPage = pageIndex == internalPages.Length - 1;
+                    bool isInsertingToCurrentPage = pageIndex == insertPage;
+                    int lastItemPageIndex = (Count - 1) % PageSize - 1;
 
-                    // If we need to copy the last element into the next page then do this
-                    int firstItemIndex = pageIndex * PageSize + startIndex;
-                    int lastItemIndex = pageIndex * PageSize + endIndex;
 
-                    if (endIndex == PageSize - 1)
+                    T[] page = internalPages[pageIndex];
+
+                    if (page != null)
                     {
-                        this[lastItemIndex + 1] = this[lastItemIndex];
+                        int startIndex = isInsertingToCurrentPage ? insertIndex : 0;
+                        int endIndex = isLastPage ? lastItemPageIndex : PageSize - 1;
+                        int arrayToBeMovedLength = 1 + endIndex - startIndex;
+
+                        // collection 
+                        int firstItemIndex = pageIndex * PageSize + startIndex;
+                        int lastItemIndex = pageIndex * PageSize + endIndex;
+
+
+                        // If we need to copy the last element into the next page then do this
+                        if (endIndex == PageSize - 1)
+                            this[lastItemIndex + 1] = this[lastItemIndex];
+                        else
+                            // Move the rest of the items along
+                            Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, arrayToBeMovedLength);
+
+                        var changedItems = new List<T>(page.Take(arrayToBeMovedLength));
+
+                        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changedItems, firstItemIndex, firstItemIndex + 1));
                     }
-
-                    int length = endIndex - startIndex;
-                    if (pageIndex != PageSize - 1 && pageIndex != insertPage)
-                        length++;
-
-                    // Move the rest of the items along
-                    Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, length);
-
-                    var changedItems = new List<T>(page.Take(length));
-
-
-                    OnCollectionChanged(new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Move,
-                        changedItems, firstItemIndex, firstItemIndex + 1));
-                    //                  OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
                 }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
             }
         }
 
@@ -410,7 +416,7 @@ namespace System.Collections.ObjectModel
                     // Move all the items to the left by one
 
                     Array.ConstrainedCopy(page, startIndex, page, startIndex - 1, PageSize - startIndex);
-
+                    
                     // Set the last item of this page to the first item of the next page
 
                     if (nextPage != null)

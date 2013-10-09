@@ -205,24 +205,30 @@ namespace System.Collections.ObjectModel
         public void PagedCollection_Insert_InsertsItemIntoList()
         {
             PagedList<int> list = new PagedList<int>();
-            for (int i = 0; i <= 24; i++)
+            for (int i = 0; i <= 14; i++)
                 list.Add(i);
 
-            Assert.AreEqual(25, list.Count);
-            list.Insert(25, -1);
-            Assert.AreEqual(26, list.Count);
-
             Assert.AreEqual(0, list[0]);
-            Assert.AreEqual(-1, list[25]);
+            Assert.AreEqual(10, list[10]);
+            Assert.AreEqual(list.Count - 1, list[list.Count - 1]);
 
-            // second scenario
+            Assert.AreEqual(15, list.Count);
+            list.Insert(list.Count, -1);
+            Assert.AreEqual(16, list.Count);
+            Assert.AreEqual(-1, list[list.Count - 1]);
 
-            Assert.AreEqual(26, list.Count);
-            list.Insert(20, -1);
-            Assert.AreEqual(27, list.Count);
 
-            Assert.AreEqual(0, list[0]);
-            Assert.AreEqual(-1, list[20]);
+            Assert.AreEqual(16, list.Count);
+            list.Insert(15, -2);
+            Assert.AreEqual(17, list.Count);
+            Assert.AreEqual(-2, list[15]);
+            Assert.AreEqual(-1, list[list.Count - 1]);
+
+            Assert.AreEqual(17, list.Count);
+            list.Insert(9, -5);
+            Assert.AreEqual(18, list.Count);
+            Assert.AreEqual(-1, list[list.Count - 1]);
+
 
         }
 

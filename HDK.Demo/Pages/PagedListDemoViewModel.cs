@@ -13,14 +13,31 @@ namespace HDK.Demo.Pages
     [ExportViewModel("#Demo #PagedList")]
     public class PagedListDemoViewModel : ViewModelBase
     {
+        public class Data
+        {
+            public Guid Id = Guid.NewGuid();
+
+            public string Text { get; set; }
+
+            public Data(string text)
+            {
+                Text = text;
+            }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
         //private VirtualizingDataList<string> m_Vector;
         //public VirtualizingDataList<string> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
-        
-        private PagedList<string> m_Vector;
-        public PagedList<string> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
 
-        private object m_SelectedItem;
-        public object SelectedItem
+        private PagedList<Data> m_Vector;
+        public PagedList<Data> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
+
+        private Data m_SelectedItem;
+        public Data SelectedItem
         {
             get { return m_SelectedItem; }
             set { m_SelectedItem = value; RaisePropertyChanged(); }
@@ -41,10 +58,10 @@ namespace HDK.Demo.Pages
             //SampleDataSource dataSource = new SampleDataSource();
             //m_Vector = new VirtualizingDataList<string>(dataSource);
 
-            Vector = new PagedList<string>();
+            Vector = new PagedList<Data>();
 
-            for (int i = 0; i < 206; i++)
-                Vector.Add(string.Format("{0}", i));
+            for (int i = 0; i < 16; i++)
+                Vector.Add(new Data(string.Format("{0}", i)));
             //dataSource.items.Add(string.Format("Base Item: {0}", i));
 
             AddNewItemsCommand = new DelegateCommand(() =>
@@ -53,36 +70,36 @@ namespace HDK.Demo.Pages
                     for (int i = 0; i < count; i++)
                     {
                         //dataSource.items.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
-                        Vector.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
+                        Vector.Add(new Data(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay)));
                     }
                 });
 
             RemoveSelectedCommand = new DelegateCommand(() =>
                 {
-                    Vector.Remove((string)SelectedItem);
+                    Vector.Remove((Data)SelectedItem);
                 });
 
             AddOneItemCommand = new DelegateCommandSync(() =>
             {
                 //dataSource.items.Add("oneItem");
-                Vector.Add("oneItem");
+                Vector.Add(new Data("oneItem"));
             });
 
             InsertBeforeCommand = new DelegateCommand((o) =>
                 {
-                    string so = (string)o;
+                    Data so = (Data)o;
                     int index = Vector.IndexOf(so);
-                    Vector.Insert(index, "B-I");
+                    Vector.Insert(index, new Data("B-I"));
                 }, (o) =>
                 {
                     return o !=null;
                 });
             InsertAfterCommand = new DelegateCommand((o) =>
                 {
-                    string so = (string)o;
+                    Data so = (Data)o;
                     int index = Vector.IndexOf(so);
                     index++;
-                    Vector.Insert(index, "A-I");
+                    Vector.Insert(index, new Data("A-I"));
                 }, (o) =>
                 {
                     return o !=null;
@@ -90,8 +107,8 @@ namespace HDK.Demo.Pages
 
             UpdateItemCommand = new DelegateCommand((o)=>
                 {
-                    int oi = Vector.IndexOf((string)o);
-                    Vector[oi] = Convert.ToString(DateTime.Now.Ticks);
+                    int oi = Vector.IndexOf((Data)o);
+                    Vector[oi] = new Data(Convert.ToString(DateTime.Now.Ticks));
                 }, (o) => o != null);
         }
 
