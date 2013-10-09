@@ -258,14 +258,20 @@ namespace System.Collections.ObjectModel
             if (index < 0 || index > Count)
                 throw new ArgumentOutOfRangeException();
 
-            // Ensure that there is enough room in the collection
-            UpdateCount(Count + 1, PageSize);
+            if (index == Count)
+                Add(item);
+            else
+            {
 
-            // If there are items after the inserted item them move them along
-            Insert_MoveItems(index);
+                // Ensure that there is enough room in the collection
+                UpdateCount(Count + 1, PageSize);
 
-            // Insert the new item
-            this[index] = item;
+                // If there are items after the inserted item them move them along
+                Insert_MoveItems(index);
+
+                // Insert the new item
+                this[index] = item;
+            }
 //            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
 
         }
@@ -359,31 +365,28 @@ namespace System.Collections.ObjectModel
                     int endIndex = pageIndex == internalPages.Length - 1 ? (Count - 1) % PageSize - 1 : PageSize - 1;
 
                     // If we need to copy the last element into the next page then do this
+                    int firstItemIndex = pageIndex * PageSize + startIndex;
+                    int lastItemIndex = pageIndex * PageSize + endIndex;
 
                     if (endIndex == PageSize - 1)
                     {
-                        int lastItemIndex = Math.Min(this.Count-1, pageIndex * PageSize + endIndex);
                         this[lastItemIndex + 1] = this[lastItemIndex];
                     }
 
                     int length = endIndex - startIndex;
-                    if (length != PageSize - 1 && pageIndex != insertPage)
+                    if (pageIndex != PageSize - 1 && pageIndex != insertPage)
                         length++;
 
                     // Move the rest of the items along
                     Array.ConstrainedCopy(page, startIndex, page, startIndex + 1, length);
 
-                    //if (endIndex == PageSize-1)
-                    //{
-                    //    //move last element to next page
-                    //    T element = page[endIndex];
-                    //    T[] nextPage = internalPages[pageIndex + 1];
-                    //    nextPage[0] = element;
-                    //}
+                    var changedItems = new List<T>(page.Take(length));
 
 
-
-  //                  OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
+                    OnCollectionChanged(new NotifyCollectionChangedEventArgs(
+                        NotifyCollectionChangedAction.Move,
+                        changedItems, firstItemIndex, firstItemIndex + 1));
+                    //                  OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, page.ToList(), insertIndex, startIndex));
                 }
             }
         }

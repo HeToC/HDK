@@ -26,6 +26,7 @@ namespace HDK.Demo.Pages
             set { m_SelectedItem = value; RaisePropertyChanged(); }
         }
 
+        public ICommand UpdateItemCommand { get; set; }
         public ICommand AddNewItemsCommand { get; set; }
         public ICommand AddOneItemCommand { get; set; }
 
@@ -43,7 +44,7 @@ namespace HDK.Demo.Pages
             Vector = new PagedList<string>();
 
             for (int i = 0; i < 206; i++)
-                Vector.Add(string.Format("Base Item: {0}", i));
+                Vector.Add(string.Format("{0}", i));
             //dataSource.items.Add(string.Format("Base Item: {0}", i));
 
             AddNewItemsCommand = new DelegateCommand(() =>
@@ -71,8 +72,6 @@ namespace HDK.Demo.Pages
                 {
                     string so = (string)o;
                     int index = Vector.IndexOf(so);
-                    if (index > 0)
-                        index--;
                     Vector.Insert(index, "B-I");
                 }, (o) =>
                 {
@@ -82,15 +81,18 @@ namespace HDK.Demo.Pages
                 {
                     string so = (string)o;
                     int index = Vector.IndexOf(so);
-                    if (index == Vector.Count-1)
-                        index = Vector.Count;
+                    index++;
                     Vector.Insert(index, "A-I");
                 }, (o) =>
                 {
                     return o !=null;
                 });
 
-
+            UpdateItemCommand = new DelegateCommand((o)=>
+                {
+                    int oi = Vector.IndexOf((string)o);
+                    Vector[oi] = Convert.ToString(DateTime.Now.Ticks);
+                }, (o) => o != null);
         }
 
         //public class SampleDataSource : PagedDataListSource<string>

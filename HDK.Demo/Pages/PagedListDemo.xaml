@@ -26,6 +26,7 @@
                 <TextBlock Text="Items: " VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Vector.Count}" VerticalAlignment="Center"/>
                 <Button Content="Add ONE" Command="{Binding AddOneItemCommand}" />
+                <Button Content="Update" Command="{Binding UpdateItemCommand}" CommandParameter="{Binding SelectedItem}"/>
                 <Button Content="Insert Before" Command="{Binding InsertBeforeCommand}" CommandParameter="{Binding SelectedItem}"/>
                 <Button Content="Insert After" Command="{Binding InsertAfterCommand}" CommandParameter="{Binding SelectedItem}"/>
                 <Button Content="AddItems" Command="{Binding AddNewItemsCommand}"/>

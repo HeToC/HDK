@@ -209,12 +209,21 @@ namespace System.Collections.ObjectModel
                 list.Add(i);
 
             Assert.AreEqual(25, list.Count);
-            list.Insert(4, -1);
+            list.Insert(25, -1);
             Assert.AreEqual(26, list.Count);
 
             Assert.AreEqual(0, list[0]);
-            Assert.AreEqual(24, list[25]);
-            Assert.AreEqual(-1, list[4]);
+            Assert.AreEqual(-1, list[25]);
+
+            // second scenario
+
+            Assert.AreEqual(26, list.Count);
+            list.Insert(20, -1);
+            Assert.AreEqual(27, list.Count);
+
+            Assert.AreEqual(0, list[0]);
+            Assert.AreEqual(-1, list[20]);
+
         }
 
         [TestMethod]
