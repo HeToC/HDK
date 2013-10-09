@@ -13,8 +13,11 @@ namespace HDK.Demo.Pages
     [ExportViewModel("#Demo #PagedList")]
     public class PagedListDemoViewModel : ViewModelBase
     {
-        private VirtualizingDataList<string> m_Vector;
-        public VirtualizingDataList<string> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
+        //private VirtualizingDataList<string> m_Vector;
+        //public VirtualizingDataList<string> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
+        
+        private PagedList<string> m_Vector;
+        public PagedList<string> Vector { get { return m_Vector; } set { m_Vector = value; RaisePropertyChanged(); } }
 
         private object m_SelectedItem;
         public object SelectedItem
@@ -25,70 +28,103 @@ namespace HDK.Demo.Pages
 
         public ICommand AddNewItemsCommand { get; set; }
         public ICommand AddOneItemCommand { get; set; }
+
+        public ICommand InsertBeforeCommand { get; set; }
+        public ICommand InsertAfterCommand { get; set; }
+        
         public ICommand RemoveSelectedCommand { get; set; }
 
         private Random rnd = new Random();
         public PagedListDemoViewModel()
         {
-            SampleDataSource dataSource = new SampleDataSource();
-            m_Vector = new VirtualizingDataList<string>(dataSource);
+            //SampleDataSource dataSource = new SampleDataSource();
+            //m_Vector = new VirtualizingDataList<string>(dataSource);
+
+            Vector = new PagedList<string>();
 
             for (int i = 0; i < 206; i++)
-                dataSource.items.Add(string.Format("Base Item: {0}", i));
+                Vector.Add(string.Format("Base Item: {0}", i));
+            //dataSource.items.Add(string.Format("Base Item: {0}", i));
 
             AddNewItemsCommand = new DelegateCommand(() =>
                 {
                     int count = 10;// rnd.Next(5, 20);
                     for (int i = 0; i < count; i++)
                     {
-                        dataSource.items.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
+                        //dataSource.items.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
+                        Vector.Add(string.Format("{1} {0}", i, DateTime.Now.TimeOfDay));
                     }
                 });
 
             RemoveSelectedCommand = new DelegateCommand(() =>
                 {
-                    //Vector.Remove(SelectedItem);
+                    Vector.Remove((string)SelectedItem);
                 });
 
             AddOneItemCommand = new DelegateCommandSync(() =>
             {
-                dataSource.items.Add("oneItem");
+                //dataSource.items.Add("oneItem");
+                Vector.Add("oneItem");
             });
 
+            InsertBeforeCommand = new DelegateCommand((o) =>
+                {
+                    string so = (string)o;
+                    int index = Vector.IndexOf(so);
+                    if (index > 0)
+                        index--;
+                    Vector.Insert(index, "B-I");
+                }, (o) =>
+                {
+                    return o !=null;
+                });
+            InsertAfterCommand = new DelegateCommand((o) =>
+                {
+                    string so = (string)o;
+                    int index = Vector.IndexOf(so);
+                    if (index == Vector.Count-1)
+                        index = Vector.Count;
+                    Vector.Insert(index, "A-I");
+                }, (o) =>
+                {
+                    return o !=null;
+                });
+
+
         }
 
-        public class SampleDataSource : PagedDataListSource<string>
-        {
-            public ObservableCollection<string> items { get; set; }
-            public SampleDataSource()
-            {
-                items = new ObservableCollection<string>();
-            }
+        //public class SampleDataSource : PagedDataListSource<string>
+        //{
+        //    public ObservableCollection<string> items { get; set; }
+        //    public SampleDataSource()
+        //    {
+        //        items = new ObservableCollection<string>();
+        //    }
 
-            protected async override Task<DataListPageResult<string>> FetchCountAsync()
-            {
-                await Task.Yield();
+        //    protected async override Task<DataListPageResult<string>> FetchCountAsync()
+        //    {
+        //        await Task.Yield();
 
-                return new DataListPageResult<string>(items.Count, null, null, null);
-            }
+        //        return new DataListPageResult<string>(items.Count, null, null, null);
+        //    }
 
-            protected async override Task<DataListPageResult<string>> FetchPageSizeAsync()
-            {
-                await Task.Yield();
+        //    protected async override Task<DataListPageResult<string>> FetchPageSizeAsync()
+        //    {
+        //        await Task.Yield();
 
-                return new DataListPageResult<string>(null, 5, null, null);
-            }
+        //        return new DataListPageResult<string>(null, 5, null, null);
+        //    }
 
-            static Random rnd = new Random();
+        //    static Random rnd = new Random();
 
-            protected async override Task<DataListPageResult<string>> FetchPageAsync(int pageNumber)
-            {
-                await Task.Delay(1000 * rnd.Next(1,20));
+        //    protected async override Task<DataListPageResult<string>> FetchPageAsync(int pageNumber)
+        //    {
+        //        await Task.Delay(1000 * rnd.Next(1,20));
 
-                string[] pageItems = items.Skip((pageNumber - 1) * 5).Take(5).ToArray();
+        //        string[] pageItems = items.Skip((pageNumber - 1) * 5).Take(5).ToArray();
 
-                return new DataListPageResult<string>(null, null, pageNumber, pageItems);
-            }
-        }
+        //        return new DataListPageResult<string>(null, null, pageNumber, pageItems);
+        //    }
+        //}
     }
 }

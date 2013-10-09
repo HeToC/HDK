@@ -205,11 +205,11 @@ namespace System.Collections.ObjectModel
         public void PagedCollection_Insert_InsertsItemIntoList()
         {
             PagedList<int> list = new PagedList<int>();
-            list.UpdateCount(20, 6);
-            list[2] = 8;
-            list[10] = 42;
+            list.UpdateCount(95, 10);
+            list[1] = 8;
+            list[95] = 42;
 
-            list.Insert(5, 123);
+            list.Insert(4, 123);
 
             Assert.AreEqual(21, list.Count);
             Assert.AreEqual(8, list[2]);

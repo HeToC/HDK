@@ -11,8 +11,8 @@ using Windows.Foundation.Collections;
 namespace System.Collections.ObjectModel
 {
     
-    public class PagedList<T> : BindableBase, 
-        IList<T>//,// ICollection<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable,
+    public class PagedList<T> : BindableBase,
+        IList<T>, IList, INotifyCollectionChanged//, ICollection<T>, IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>,  ICollection, IEnumerable,
         //INotifyPropertyChanged, INotifyCollectionChanged , IObservableVector<T>
     {
         private T[][] internalPages = new T[0][];
@@ -26,71 +26,68 @@ namespace System.Collections.ObjectModel
             this.PageSize = pageSize;
             m_monitor = new ReenterancyMonitor<PagedList<T>>(this);
         }
-
-        [IndexerName("Item")]
         public T this[int index]
         {
             get
             {
-                // Validate that the index is within range
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException();
-
-                // If the page does not exist then return a placeholder
-                int pageIndex = index / PageSize;
-                T[] page = internalPages[pageIndex];
-
-                if (page == null)
-                    return default(T);
-
-                // Add the page to the recently accessed page list
-                AddRecentlyUsedPage(pageIndex);
-
-                // Return the element
-                int elementIndex = index % PageSize;
-                return page[elementIndex];
+                return GetItem(index);
             }
             set
             {
-                // Validate that the index is within range
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException();
-
-                // If the page does not exist then create it
-                int pageIndex = index / PageSize;
-                T[] page = internalPages[pageIndex];
-
-                if (page == null)
-                {
-                    page = new T[PageSize];
-                    internalPages[pageIndex] = page;
-                }
-
-                // Add the page to the recently accessed page list
-
-                AddRecentlyUsedPage(pageIndex);
-
-                // Set the element
-
-                int elementIndex = index % PageSize;
-
-                T oldValue = this[index];
-                page[elementIndex] = value;
-
-                RaisePropertyChanged("Item[]");
-                //if(oldValue == null)
-                //    OnCollectionChanged(
-                //            new NotifyCollectionChangedEventArgs(
-                //                NotifyCollectionChangedAction.Add,
-                //                value, index));
-                //else
-                //    OnCollectionChanged(
-                //        new NotifyCollectionChangedEventArgs(
-                //            NotifyCollectionChangedAction.Replace,
-                //            value,
-                //            oldValue,
-                //            index));
+                SetItem(index, value);
             }
+        }
+
+        private T GetItem(int index)
+        {
+            // Validate that the index is within range
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException();
+
+            // If the page does not exist then return a placeholder
+            int pageIndex = index / PageSize;
+            T[] page = internalPages[pageIndex];
+
+            if (page == null)
+                return default(T);
+
+            // Add the page to the recently accessed page list
+            AddRecentlyUsedPage(pageIndex);
+
+            // Return the element
+            int elementIndex = index % PageSize;
+            return page[elementIndex];
+        }
+
+        private void SetItem(int index, T value)
+        {
+            // Validate that the index is within range
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException();
+
+            // If the page does not exist then create it
+            int pageIndex = index / PageSize;
+            T[] page = internalPages[pageIndex];
+
+            if (page == null)
+            {
+                page = new T[PageSize];
+                internalPages[pageIndex] = page;
+            }
+
+            // Add the page to the recently accessed page list
+
+            AddRecentlyUsedPage(pageIndex);
+
+            // Set the element
+
+            int elementIndex = index % PageSize;
+
+            T oldValue = this[index];
+            page[elementIndex] = value;
+
+            RaisePropertyChanged("Item[]");
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue, index));
         }
 
         private int m_Count;
@@ -164,7 +161,6 @@ namespace System.Collections.ObjectModel
             }
 
             RaisePropertyChanged("Count");
-            RaisePropertyChanged("Item[]");
         }
 
         public virtual int Add(T item)
@@ -173,16 +169,14 @@ namespace System.Collections.ObjectModel
 
             int newIndex = Count;
             UpdateCount(Count + 1, PageSize);
+
+            // Raise collection changed events for each new item (in ascending order)
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new object[] { null }, newIndex));
+
             this[newIndex] = item;
-            newIndex = this.IndexOf(item);
-//            try
-//            {
- //               OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, newIndex));
- //           }
-//            catch (Exception exc)
-//            {
-//                throw exc;
-//            }
+
+            RaisePropertyChanged("Item[]");
+
             return newIndex;
         }
 
@@ -200,7 +194,7 @@ namespace System.Collections.ObjectModel
             Count = 0;
             internalPages = new T[0][];
 
- //           OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         public bool Contains(T item)
@@ -299,6 +293,9 @@ namespace System.Collections.ObjectModel
             // Reduce the count (NB: We don't worry about contracting the internal page list)
             Count--;
 
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new object[] { null }, index));
+
+            RaisePropertyChanged("Item[]");
 
             // Move all items after the removed item to the left
             Remove_MoveItems(index);
@@ -359,13 +356,13 @@ namespace System.Collections.ObjectModel
                 if (page != null)
                 {
                     int startIndex = pageIndex == insertPage ? insertIndex : 0;
-                    int endIndex = pageIndex == internalPages.Length ? (Count - 1) % PageSize - 1 : PageSize - 1;
+                    int endIndex = pageIndex == internalPages.Length-1 ? (Count - 1) % PageSize - 1 : PageSize - 1;
 
                     // If we need to copy the last element into the next page then do this
 
                     if (endIndex == PageSize - 1)
                     {
-                        int lastItemIndex = pageIndex * PageSize + endIndex;
+                        int lastItemIndex = Math.Min(this.Count-1, pageIndex * PageSize + endIndex);
                         this[lastItemIndex + 1] = this[lastItemIndex];
                     }
 
@@ -406,20 +403,20 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        //#region INotifyCollectionChanged
+        #region INotifyCollectionChanged
 
-        //public event NotifyCollectionChangedEventHandler CollectionChanged;
-        //protected void OnCollectionChanged(NotifyCollectionChangedEventArgs ea)
-        //{
-            
-        //    var handler = CollectionChanged;
-        //    if (handler != null)
-        //        using (BlockReentrancy())
-        //            handler(this, ea);
-        //    //RaiseVectorChanged(new VectorChangedEventArgs(ea, ea.i
-        //}
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs ea)
+        {
 
-        //#endregion
+            var handler = CollectionChanged;
+            if (handler != null)
+                //using (BlockReentrancy())
+                    handler(this, ea);
+            //RaiseVectorChanged(new VectorChangedEventArgs(ea, ea.i
+        }
+
+        #endregion
 
 
         ////public event VectorChangedEventHandler<T> VectorChanged;
@@ -430,62 +427,62 @@ namespace System.Collections.ObjectModel
         ////        handler(this, ea);
         ////}
 
-        //int IList.Add(object value)
-        //{
-        //    return this.Add((T)value);
-        //}
+        int IList.Add(object value)
+        {
+            return this.Add((T)value);
+        }
 
-        //bool IList.Contains(object value)
-        //{
-        //    return this.Contains((T)value);
-        //}
+        bool IList.Contains(object value)
+        {
+            return this.Contains((T)value);
+        }
 
-        //int IList.IndexOf(object value)
-        //{
-        //    return this.IndexOf((T)value);
-        //}
+        int IList.IndexOf(object value)
+        {
+            return this.IndexOf((T)value);
+        }
 
-        //void IList.Insert(int index, object value)
-        //{
-        //    this.Insert(index, (T)value);
-        //}
+        void IList.Insert(int index, object value)
+        {
+            this.Insert(index, (T)value);
+        }
 
-        //bool IList.IsFixedSize
-        //{
-        //    get { return false; }
-        //}
+        bool IList.IsFixedSize
+        {
+            get { return false; }
+        }
 
-        //void IList.Remove(object value)
-        //{
-        //    this.Remove((T)value);
-        //}
+        void IList.Remove(object value)
+        {
+            this.Remove((T)value);
+        }
 
-        //object IList.this[int index]
-        //{
-        //    get
-        //    {
-        //        return this[index];
-        //    }
-        //    set
-        //    {
-        //        this[index] = (T)value;
-        //    }
-        //}
+        object IList.this[int index]
+        {
+            get
+            {
+                return GetItem(index);
+            }
+            set
+            {
+                SetItem(index, (T)value);
+            }
+        }
 
-        //void ICollection.CopyTo(Array array, int index)
-        //{
-        //    this.CopyTo(array.OfType<T>().ToArray(), index);
-        //}
+        void ICollection.CopyTo(Array array, int index)
+        {
+            this.CopyTo(array.OfType<T>().ToArray(), index);
+        }
 
-        //bool ICollection.IsSynchronized
-        //{
-        //    get { return true; }
-        //}
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
 
-        //object ICollection.SyncRoot
-        //{
-        //    get { return m_monitor; }
-        //}
+        object ICollection.SyncRoot
+        {
+            get { return m_monitor; }
+        }
 
 
         ///// <summary>
