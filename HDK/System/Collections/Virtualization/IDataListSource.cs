@@ -65,17 +65,17 @@ namespace System.Collections.Virtualization
 
         // *** Properties ***
 
-        public int PageCacheSize
-        {
-            get
-            {
-                return InternalList.PageCacheSize;
-            }
-            set
-            {
-                InternalList.PageCacheSize = value;
-            }
-        }
+        //public int PageCacheSize
+        //{
+        //    get
+        //    {
+        //        return InternalList.PageCacheSize;
+        //    }
+        //    set
+        //    {
+        //        InternalList.PageCacheSize = value;
+        //    }
+        //}
 
         // *** Private Properties ***
 
@@ -239,7 +239,7 @@ namespace System.Collections.Virtualization
             {
                 // (a) Update the PageVirtualizingList with this information
 
-                InternalList.UpdateCount(count.Value, itemsPerPage.Value);
+                ////////////InternalList.UpdateCount(count.Value, itemsPerPage.Value);
 
                 // (b) If the number of pages has changed then update the array for fetching page tasks
 

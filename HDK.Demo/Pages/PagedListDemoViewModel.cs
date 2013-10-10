@@ -48,7 +48,9 @@ namespace HDK.Demo.Pages
         public ICommand AddOneItemCommand { get; set; }
 
         public ICommand InsertBeforeCommand { get; set; }
-        public ICommand InsertAfterCommand { get; set; }
+        public ICommand InsertAfterCommand { get; set; } 
+        public ICommand InsertItemsBeforeCommand { get; set; }
+        public ICommand InsertItemsAfterCommand { get; set; }
         
         public ICommand RemoveSelectedCommand { get; set; }
 
@@ -96,15 +98,39 @@ namespace HDK.Demo.Pages
                 });
             InsertAfterCommand = new DelegateCommand((o) =>
                 {
-                    Data so = (Data)o;
-                    int index = Vector.IndexOf(so);
-                    index++;
-                    Vector.Insert(index, new Data("A-I"));
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Data so = (Data)o;
+                        int index = Vector.IndexOf(so);
+                        index++;
+                        Vector.Insert(index, new Data("A-I"));
+                    }
                 }, (o) =>
                 {
                     return o !=null;
                 });
-
+            InsertItemsBeforeCommand = new DelegateCommand((o) =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Data so = (Data)o;
+                    int index = Vector.IndexOf(so);
+                    Vector.Insert(index, new Data("B-I"));
+                }
+            }, (o) =>
+            {
+                return o != null;
+            });
+            InsertItemsAfterCommand = new DelegateCommand((o) =>
+            {
+                Data so = (Data)o;
+                int index = Vector.IndexOf(so);
+                index++;
+                Vector.Insert(index, new Data("A-I"));
+            }, (o) =>
+            {
+                return o != null;
+            });
             UpdateItemCommand = new DelegateCommand((o)=>
                 {
                     int oi = Vector.IndexOf((Data)o);
