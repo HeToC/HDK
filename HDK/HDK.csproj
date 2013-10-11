@@ -184,6 +184,7 @@
     <Compile Include="System\Data\Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="System\Windows\Xaml\Expander.cs" />
     <Compile Include="System\Windows\Xaml\HeaderedContentControl.cs" />
+    <Compile Include="System\Windows\Xaml\ParallaxGridView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Composition.AttributedModel">
