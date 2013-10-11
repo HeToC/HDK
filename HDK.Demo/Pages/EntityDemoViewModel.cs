@@ -24,17 +24,18 @@ namespace HDK.Demo.Pages
             try
             {
                 for (int i = 0; i < 100; i++)
-                    DB.AddEntity<GearItem>(new GearItem()
-                        {
-                            Name = string.Format("Item {0}", i + 1),
-                            Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX)),
-                        });
+                {
+                    
+                    var gearItem = DB.CreateEntity<GearItem>(i);
+                    gearItem.Name = string.Format("Item {0}", i + 1);
+                    gearItem.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
+                }
 
                 for (int i = 200; i < 250; i++)
-                    DB.AddEntity<Character>(new Character()
-                    {
-                        Name = System.Data.Fake.PersonName.GetName()
-                    });
+                {
+                    var character = DB.CreateEntity<Character>(i);
+                    character.Name = System.Data.Fake.PersonName.GetName();
+                }
             }
             catch (Exception exc)
             {
@@ -111,6 +112,11 @@ namespace HDK.Demo.Pages
     public class GearItem : DataObject
     {
         public const string GearItemEquipmentGearItemRelation = "GearItemEquipmentGearItemRelation";
+
+        protected GearItem(DataObjectSet context, long id)
+            : base(context, id)
+        {
+        }
 
         public DataObjectCollection<EquipmentGearItem> EquipmentGearItems
         {
@@ -226,7 +232,7 @@ namespace HDK.Demo.Pages
     {
         public const string EquipmentEquipmentGearItemRelation = "EquipmentEquipmentGearItemRelation";
 
-        public Equipment(DataObjectSet context, long id)
+        protected Equipment(DataObjectSet context, long id)
             : base(context, id)
         {
         }
@@ -283,10 +289,10 @@ namespace HDK.Demo.Pages
         public const string CharacterEquipmentRelation =
                             "CharacterEquipmentRelation";
 
-        //public Character(DataObjectSet context, long id)
-        //    : base(context, id)
-        //{
-        //}
+        protected Character(DataObjectSet context, long id)
+            : base(context, id)
+        {
+        }
 
         public DataObjectCollection<Equipment> Equipments
         {
