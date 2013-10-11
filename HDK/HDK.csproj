@@ -114,8 +114,12 @@
     <Compile Include="System\Collections\Virtualization\VirtualizingVectorBase.cs" />
     <Compile Include="System\Data\DataObject.cs" />
     <Compile Include="System\Data\DataObjectCollection.cs" />
+    <Compile Include="System\Data\DataObjectCollectionSource.cs" />
     <Compile Include="System\Data\DataObjectSet.cs" />
     <Compile Include="System\Data\IDataObjectCollection.cs" />
+    <Compile Include="System\Data\IDataObjectFilter.cs" />
+    <Compile Include="System\Data\IDataObjectSelector.cs" />
+    <Compile Include="System\Data\IDataObjectSorter.cs" />
     <Compile Include="System\DelegateDisposable.cs" />
     <Compile Include="System\ReenterancyMonitor.cs" />
     <Compile Include="System\Collections\Generic\GroupedObservableVectorView.cs" />
@@ -182,6 +186,7 @@
     <Compile Include="System\Threading\Tasks\AsyncLazyStatus.cs" />
     <Compile Include="System\UriExtensions.cs" />
     <Compile Include="System\WeakDelegate.cs" />
+    <Compile Include="System\WeakEventHandler.cs" />
     <Compile Include="System\WeakReferenceList.cs" />
     <Compile Include="System\Windows\Input\DelegateCommand.cs" />
     <Compile Include="System\Windows\Xaml\CompositeApplication.cs" />

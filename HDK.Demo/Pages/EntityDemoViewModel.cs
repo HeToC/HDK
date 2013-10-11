@@ -21,19 +21,25 @@ namespace HDK.Demo.Pages
         {
             DB = new CharacterDatabase();
 
-            for (int i = 0; i < 100; i++)
-                DB.AddEntity<GearItem>(new GearItem()
+            try
+            {
+                for (int i = 0; i < 100; i++)
+                    DB.AddEntity<GearItem>(new GearItem()
+                        {
+                            Name = string.Format("Item {0}", i + 1),
+                            Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX)),
+                        });
+
+                for (int i = 200; i < 250; i++)
+                    DB.AddEntity<Character>(new Character()
                     {
-                        Name = string.Format("Item {0}", i + 1),
-                        Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX)),
+                        Name = System.Data.Fake.PersonName.GetName()
                     });
-
-            for (int i = 0; i < 100; i++)
-                DB.AddEntity<Character>(new Character()
-                {
-                    Name = System.Data.Fake.PersonName.GetName()
-                });
-
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
 
             //for (int ic = 0; ic < 100; ic++)
             //{

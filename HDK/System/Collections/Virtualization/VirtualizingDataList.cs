@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace System.Collections.Virtualization
 {
-        public interface IUpdatableCollection
+    public interface IUpdatableCollection
     {
         void Update(DataListUpdate update);
     }
 
-        public class VirtualizingDataList<T> : VirtualizingVectorBase<T>, IUpdatableCollection
+    public class VirtualizingDataList<T> : VirtualizingVectorBase<T>, IUpdatableCollection
     {
         // *** Fields ***
 
@@ -67,5 +67,4 @@ namespace System.Collections.Virtualization
             return dataListSource.IndexOf(item);
         }
     }
-
 }

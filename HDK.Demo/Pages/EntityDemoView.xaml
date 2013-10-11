@@ -5,7 +5,11 @@
     xmlns:local="using:HDK.Demo.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:data="using:System.Data"
     mc:Ignorable="d">
+  <Page.Resources>
+    <data:DataObjectCollectionSource x:Name="docsCharacters" ItemsSource="{Binding DB.Characters}" />
+  </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
@@ -13,7 +17,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>                
         </Grid.ColumnDefinitions>
-        <GridView Grid.Column="0" ItemsSource="{Binding DB.Characters}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
+        <GridView Grid.Column="0" ItemsSource="{Binding Source, Source={StaticResource docsCharacters}}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Vertical"/>
