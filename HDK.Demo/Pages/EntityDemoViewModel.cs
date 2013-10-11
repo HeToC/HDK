@@ -25,7 +25,14 @@ namespace HDK.Demo.Pages
         {
             DB = new CharacterDatabase();
 
-            try
+            LoadDataCommand = new DelegateCommand((o) => LoadData());
+        }
+
+        public ICommand LoadDataCommand { get; set; }
+
+        private Task LoadData()
+        {
+            return Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < 100; i++)
                 {
@@ -58,29 +65,7 @@ namespace HDK.Demo.Pages
                         });
                     });
                 });
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
-
-            //for (int ic = 0; ic < 100; ic++)
-            //{
-            //    var c = new Character(DB, ic + 1)
-            //    {
-            //        Name = System.Data.Fake.PersonName.GetName()
-            //    };
-            //    for(int i=0;i<10;i++)
-            //    {
-            //        DB.Equipments.Add(new Equipment(DB, i + 1)
-            //            {
-            //                Name = string.Format("Equipment {0}", i + 1),
-            //                CharacterId = ic
-            //            });
-            //    }
-            //}
-
-
+            });
         }
     }
 

@@ -12,26 +12,35 @@
   </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>                
         </Grid.ColumnDefinitions>
-        <GridView Grid.Column="0" ItemsSource="{Binding Source, Source={StaticResource docsCharacters}}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
+
+      <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+        <Button Content="Load Data" Command="{Binding LoadDataCommand}" />
+      </StackPanel>
+      
+        <GridView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source, Source={StaticResource docsCharacters}}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <GridView Grid.Column="1" ItemsSource="{Binding SelectedCharacter.Equipments}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedEquipment, Mode=TwoWay}">
+        <GridView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SelectedCharacter.Equipments}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedEquipment, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                   <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-      <GridView Grid.Column="2" ItemsSource="{Binding SelectedEquipment.EquipmentGearItems}" DisplayMemberPath="GearItem.Name">
+      <GridView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SelectedEquipment.EquipmentGearItems}" DisplayMemberPath="GearItem.Name">
         <GridView.ItemsPanel>
           <ItemsPanelTemplate>
             <VirtualizingStackPanel Orientation="Vertical"/>
