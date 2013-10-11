@@ -112,6 +112,10 @@
     <Compile Include="System\Collections\Virtualization\IDataListSource.cs" />
     <Compile Include="System\Collections\Virtualization\VirtualizingDataList.cs" />
     <Compile Include="System\Collections\Virtualization\VirtualizingVectorBase.cs" />
+    <Compile Include="System\Data\DataObject.cs" />
+    <Compile Include="System\Data\DataObjectCollection.cs" />
+    <Compile Include="System\Data\DataObjectSet.cs" />
+    <Compile Include="System\Data\IDataObjectCollection.cs" />
     <Compile Include="System\DelegateDisposable.cs" />
     <Compile Include="System\ReenterancyMonitor.cs" />
     <Compile Include="System\Collections\Generic\GroupedObservableVectorView.cs" />
