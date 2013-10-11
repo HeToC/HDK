@@ -20,16 +20,23 @@
         <GridView Grid.Column="0" ItemsSource="{Binding Source, Source={StaticResource docsCharacters}}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical"/>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <GridView Grid.Column="1" ItemsSource="{Binding SelectedCharacter.Equipments}" DisplayMemberPath="Name">
+        <GridView Grid.Column="1" ItemsSource="{Binding SelectedCharacter.Equipments}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedEquipment, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical"/>
+                  <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
+      <GridView Grid.Column="2" ItemsSource="{Binding SelectedEquipment.EquipmentGearItems}" DisplayMemberPath="GearItem.Name">
+        <GridView.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel Orientation="Vertical"/>
+          </ItemsPanelTemplate>
+        </GridView.ItemsPanel>
+      </GridView>
     </Grid>
 </Page>

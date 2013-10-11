@@ -14,7 +14,11 @@ namespace HDK.Demo.Pages
     {
         public CharacterDatabase DB { get; set; }
 
-        public Character SelectedCharacter { get; set; }
+        private Character m_SelectedCharacter;
+        public Character SelectedCharacter { get { return m_SelectedCharacter; } set { m_SelectedCharacter = value; RaisePropertyChanged(); } }
+
+        private Equipment m_SelectedEquipment;
+        public Equipment SelectedEquipment { get { return m_SelectedEquipment; } set { m_SelectedEquipment = value; RaisePropertyChanged(); } }
 
         private Random rnd = new Random();
         public EntityDemoViewModel()
@@ -25,17 +29,35 @@ namespace HDK.Demo.Pages
             {
                 for (int i = 0; i < 100; i++)
                 {
-                    
-                    var gearItem = DB.CreateEntity<GearItem>(i);
+                    var gearItem = DB.CreateEntity<GearItem>(i + 1);
                     gearItem.Name = string.Format("Item {0}", i + 1);
                     gearItem.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
+
+                    DB.AddEntity(gearItem);
                 }
 
-                for (int i = 200; i < 250; i++)
+                Parallel.For(200, 300, (i) =>
                 {
                     var character = DB.CreateEntity<Character>(i);
                     character.Name = System.Data.Fake.PersonName.GetName();
-                }
+                    DB.AddEntity(character);
+
+                    Parallel.For(i * 1000, i * 1000 + 200, (e) =>
+                    {
+                        var eq = DB.CreateEntity<Equipment>(e);
+                        eq.Name = string.Format("Equupment {0}", e);
+                        eq.CharacterId = e / 1000;
+                        DB.AddEntity(eq);
+
+                        Parallel.For(e * 1000, e * 1000 + 100, (egi) =>
+                        {
+                            var egitem = DB.CreateEntity<EquipmentGearItem>(egi + 1);
+                            egitem.EquipmentId = egi / 1000;
+                            egitem.GearItemId = egi - (e * 1000) + 1;
+                            DB.AddEntity(egitem);
+                        });
+                    });
+                });
             }
             catch (Exception exc)
             {
@@ -113,7 +135,7 @@ namespace HDK.Demo.Pages
     {
         public const string GearItemEquipmentGearItemRelation = "GearItemEquipmentGearItemRelation";
 
-        protected GearItem(DataObjectSet context, long id)
+        public GearItem(DataObjectSet context, long id)
             : base(context, id)
         {
         }
@@ -183,6 +205,11 @@ namespace HDK.Demo.Pages
 
     public class EquipmentGearItem : DataObject
     {
+        public EquipmentGearItem(DataObjectSet context, long id)
+            : base(context, id)
+        {
+        }
+
         private long _equipmentId;
 
         public long EquipmentId
@@ -232,7 +259,7 @@ namespace HDK.Demo.Pages
     {
         public const string EquipmentEquipmentGearItemRelation = "EquipmentEquipmentGearItemRelation";
 
-        protected Equipment(DataObjectSet context, long id)
+        public Equipment(DataObjectSet context, long id)
             : base(context, id)
         {
         }
@@ -289,7 +316,7 @@ namespace HDK.Demo.Pages
         public const string CharacterEquipmentRelation =
                             "CharacterEquipmentRelation";
 
-        protected Character(DataObjectSet context, long id)
+        public Character(DataObjectSet context, long id)
             : base(context, id)
         {
         }
