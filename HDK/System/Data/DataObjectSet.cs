@@ -40,10 +40,17 @@ namespace System.Data
             return null;
         }
 
-        public T CreateEntity<T>(long id) where T : DataObject
+        public T CreateEntity<T>(long id = -1) where T : DataObject
         {
+            if (id == -1)
+                id = GenerateId();
             Type t = typeof(T);
             return (T)Activator.CreateInstance(t, new object[] { this, id });
+        }
+
+        public Task<T> CreateEntityAsync<T>(long id = -1) where T : DataObject
+        {
+            return Task.Run(() => CreateEntity<T>(id));
         }
 
         public void AddEntity<T>(T entity) where T : DataObject
@@ -53,6 +60,11 @@ namespace System.Data
             {
                 collection.Add(entity);
             }
+        }
+
+        public Task AddEntityAsync<T>(T entity) where T : DataObject
+        {
+            return Task.Run(() => AddEntity(entity));
         }
 
         public long GenerateId()

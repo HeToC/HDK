@@ -20,9 +20,7 @@ namespace System.Data
             set { SetValue(ItemsSourceProperty, value); }
         }
 
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(IEnumerable),
- typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
 
         public IDataObjectFilter Filter
         {
@@ -30,9 +28,7 @@ namespace System.Data
             set { SetValue(EntityFilterProperty, value); }
         }
 
-        public static readonly DependencyProperty EntityFilterProperty =
-            DependencyProperty.Register("Filter", typeof(IDataObjectFilter),
- typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
+        public static readonly DependencyProperty EntityFilterProperty = DependencyProperty.Register("Filter", typeof(IDataObjectFilter), typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
 
         public IDataObjectSelector Selector
         {
@@ -40,9 +36,7 @@ namespace System.Data
             set { SetValue(RowSelectorProperty, value); }
         }
 
-        public static readonly DependencyProperty RowSelectorProperty =
-            DependencyProperty.Register("Selector", typeof(IDataObjectSelector),
- typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
+        public static readonly DependencyProperty RowSelectorProperty = DependencyProperty.Register("Selector", typeof(IDataObjectSelector), typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
 
         public IDataObjectSorter Sorter
         {
@@ -50,9 +44,7 @@ namespace System.Data
             set { SetValue(SorterProperty, value); }
         }
 
-        public static readonly DependencyProperty SorterProperty =
-            DependencyProperty.Register("Sorter", typeof(IDataObjectSorter),
- typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
+        public static readonly DependencyProperty SorterProperty = DependencyProperty.Register("Sorter", typeof(IDataObjectSorter), typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
 
         public bool CallDispatcherSynchronous { get; set; }
 
@@ -72,6 +64,9 @@ namespace System.Data
 
         public DataObjectCollectionSource()
         {
+            CallDispatcherSynchronous = true;
+
+
             _updateItemsTrigger.Interval = new TimeSpan(0, 0, 1);
             _updateItemsTrigger.Tick += (s, e) => UpdateViewSource();
             //_updateItemsTrigger.SetElapsedAction(UpdateViewSource);
@@ -135,9 +130,9 @@ namespace System.Data
             }
         }
 
-        private void CallDispatcher(Action a)
+        private async void CallDispatcher(Action a)
         {
-            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => a());
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => a());
         }
 
         private void SelectRows()
@@ -199,7 +194,6 @@ namespace System.Data
 
         private void UpdateViewSource()
         {
-
             _updateItemsTrigger.Stop();
 
             CallDispatcher(() =>
@@ -235,7 +229,6 @@ namespace System.Data
                         else
                         {
                             _viewSource.Insert(newIndex, x);
-
                         }
                         newIndex++;
                     }

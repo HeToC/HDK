@@ -7,15 +7,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:System.Data"
     mc:Ignorable="d">
-  <Page.Resources>
-    <data:DataObjectCollectionSource x:Name="docsCharacters" ItemsSource="{Binding DB.Characters}" />
-  </Page.Resources>
+    <Page.Resources>
+        <!--data:DataObjectCollectionSource x:Name="docsCharacters" 
+                                         ItemsSource="{Binding DB.Characters}" 
+                                         Filter="{Binding SelectedFilter}" 
+                                         Sorter="{Binding SelectedSorter}" 
+                                         Selector="{Binding SelectedSelector}"
+                                         / -->
+        <!--CallDispatcherSynchronous="True"-->
+    </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-      </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -26,7 +32,7 @@
         <Button Content="Load Data" Command="{Binding LoadDataCommand}" />
       </StackPanel>
       
-        <GridView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source, Source={StaticResource docsCharacters}}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
+        <GridView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding DOCS.Source}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Vertical"/>

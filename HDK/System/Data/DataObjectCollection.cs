@@ -153,7 +153,7 @@ namespace System.Data
             }
         }
 
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        protected override async void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             using (BlockReentrancy())
             {
@@ -168,7 +168,7 @@ namespace System.Data
                     if (isOnDifferentThread)
                     {
                         var handler1 = handler;
-                        dispatcherObject.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => handler1(this, e));
+                        await dispatcherObject.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => handler1(this, e));
                     }
                     else
                     {
@@ -177,6 +177,7 @@ namespace System.Data
                 }
             }
         }
+
     }
 
 }

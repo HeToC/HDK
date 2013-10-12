@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Collections\Specialized\FastObservableCollection.cs" />
     <Compile Include="System\Collections\Virtualization\DataListPageResult.cs" />
     <Compile Include="System\Collections\Virtualization\DataListUpdate.cs" />
     <Compile Include="System\Collections\Virtualization\IDataListSource.cs" />

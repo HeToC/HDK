@@ -12,6 +12,9 @@ namespace HDK.Demo.Pages
     [ExportViewModel("#Demo #Entity")]
     public class EntityDemoViewModel : ViewModelBase
     {
+        private DataObjectCollectionSource m_Docs;
+        public DataObjectCollectionSource DOCS { get { return m_Docs; } set { m_Docs = value; RaisePropertyChanged(); } }
+
         public CharacterDatabase DB { get; set; }
 
         private Character m_SelectedCharacter;
@@ -20,52 +23,71 @@ namespace HDK.Demo.Pages
         private Equipment m_SelectedEquipment;
         public Equipment SelectedEquipment { get { return m_SelectedEquipment; } set { m_SelectedEquipment = value; RaisePropertyChanged(); } }
 
+        private IDataObjectFilter m_SelectedFilter;
+        public IDataObjectFilter SelectedFilter
+        {
+            get { return m_SelectedFilter; }
+            set { m_SelectedFilter = value; RaisePropertyChanged(); }
+        }
+
+        public IDataObjectSelector m_SelectedSelector;
+        public IDataObjectSelector SelectedSelector
+        {
+            get { return m_SelectedSelector; }
+            set { m_SelectedSelector = value; RaisePropertyChanged(); }
+        }
+
+        public IDataObjectSorter m_SelectedSorter;
+        public IDataObjectSorter SelectedSorter
+        {
+            get { return m_SelectedSorter; }
+            set { m_SelectedSorter = value; RaisePropertyChanged(); }
+        }
+
+
         private Random rnd = new Random();
         public EntityDemoViewModel()
         {
+            DOCS = new DataObjectCollectionSource();
+
             DB = new CharacterDatabase();
+
+            DOCS.ItemsSource = DB.Characters;
 
             LoadDataCommand = new DelegateCommand((o) => LoadData());
         }
 
         public ICommand LoadDataCommand { get; set; }
 
-        private Task LoadData()
+        private async Task LoadData()
         {
-            return Task.Factory.StartNew(() =>
+            for(int i=0;i<200;i++)
             {
-                for (int i = 0; i < 100; i++)
+                var character = await DB.CreateEntityAsync<Character>();
+                character.Name = System.Data.Fake.PersonName.GetName();
+                await DB.AddEntityAsync(character);
+
+                for(int e = 0;e<100;e++)
                 {
-                    var gearItem = DB.CreateEntity<GearItem>(i + 1);
-                    gearItem.Name = string.Format("Item {0}", i + 1);
-                    gearItem.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
+                    var eq = await DB.CreateEntityAsync<Equipment>();
+                    eq.Name = string.Format("Equupment {0}", e);
+                    eq.CharacterId = character.Id;
+                    await DB.AddEntityAsync(eq);
 
-                    DB.AddEntity(gearItem);
-                }
-
-                Parallel.For(200, 300, (i) =>
-                {
-                    var character = DB.CreateEntity<Character>(i);
-                    character.Name = System.Data.Fake.PersonName.GetName();
-                    DB.AddEntity(character);
-
-                    Parallel.For(i * 1000, i * 1000 + 200, (e) =>
+                    for(int egi = 0; egi < 100;egi++)
                     {
-                        var eq = DB.CreateEntity<Equipment>(e);
-                        eq.Name = string.Format("Equupment {0}", e);
-                        eq.CharacterId = e / 1000;
-                        DB.AddEntity(eq);
-
-                        Parallel.For(e * 1000, e * 1000 + 100, (egi) =>
-                        {
-                            var egitem = DB.CreateEntity<EquipmentGearItem>(egi + 1);
-                            egitem.EquipmentId = egi / 1000;
-                            egitem.GearItemId = egi - (e * 1000) + 1;
-                            DB.AddEntity(egitem);
-                        });
-                    });
-                });
-            });
+                        var gearItem = await DB.CreateEntityAsync<GearItem>();
+                        gearItem.Name = string.Format("Item {0}", i + 1);
+                        gearItem.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
+                        await DB.AddEntityAsync(gearItem);
+                        
+                        var egitem = await DB.CreateEntityAsync<EquipmentGearItem>(egi + 1);
+                        egitem.EquipmentId = eq.Id;
+                        egitem.GearItemId = gearItem.Id;
+                        await DB.AddEntityAsync(egitem);
+                    }
+                }
+            }
         }
     }
 
