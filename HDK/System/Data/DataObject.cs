@@ -7,8 +7,11 @@ using System.Text;
 
 namespace System.Data
 {
-    public abstract class DataObject : INotifyPropertyChanged
+    public abstract class DataObject : BindableBase
     {
+        public int CurrentLoadingStage { get; set; }
+        public int MaxLoadingStage { get; set; }
+
         internal const string ObjectContextName = "Context";
         private DataObjectSet _context;
         public DataObjectSet Context
@@ -27,7 +30,6 @@ namespace System.Data
         public string ObjectId
         {
             get { return GetType().Name + "" + Id; }
-
         }
 
         private long _id;
@@ -35,9 +37,10 @@ namespace System.Data
         protected DataObject()
         {
             _context = null;
+            CurrentLoadingStage = 0;
         }
 
-        protected DataObject(DataObjectSet context, long id)
+        protected DataObject(DataObjectSet context, long id) : this()
         {
             _context = context;
             Id = id;
@@ -50,24 +53,13 @@ namespace System.Data
             {
                 if (_id == value) return;
                 _id = value;
-                RaisePropertyChanged("Id");
+                RaisePropertyChanged();
             }
         }
 
         public void Delete()
         {
             Context = null;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void RaisePropertyChanged(string propertyName)
-        {
-            var ev = PropertyChanged;
-            if (ev != null)
-            {
-                ev(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
 
         public void Copy<T>(T source) where T : DataObject

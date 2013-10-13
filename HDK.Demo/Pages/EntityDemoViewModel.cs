@@ -54,39 +54,67 @@ namespace HDK.Demo.Pages
 
             DOCS.ItemsSource = DB.Characters;
 
-            LoadDataCommand = new DelegateCommand((o) => LoadData());
+            LoadDataCommand = new DelegateCommandSync(() => LoadData());
         }
 
         public ICommand LoadDataCommand { get; set; }
 
-        private async Task LoadData()
+        private async void LoadData()
         {
-            for(int i=0;i<200;i++)
+            int maxCharacters = 10;
+            List<Task<Character>> characterTasks = new List<Task<Character>>();
+            for (int i = 0; i < maxCharacters; i++)
             {
-                var character = await DB.CreateEntityAsync<Character>();
-                character.Name = System.Data.Fake.PersonName.GetName();
-                await DB.AddEntityAsync(character);
-
-                for(int e = 0;e<100;e++)
-                {
-                    var eq = await DB.CreateEntityAsync<Equipment>();
-                    eq.Name = string.Format("Equupment {0}", e);
-                    eq.CharacterId = character.Id;
-                    await DB.AddEntityAsync(eq);
-
-                    for(int egi = 0; egi < 100;egi++)
+                var tsk = Task.Run<Character>(() =>
                     {
-                        var gearItem = await DB.CreateEntityAsync<GearItem>();
-                        gearItem.Name = string.Format("Item {0}", i + 1);
-                        gearItem.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
-                        await DB.AddEntityAsync(gearItem);
-                        
-                        var egitem = await DB.CreateEntityAsync<EquipmentGearItem>(egi + 1);
-                        egitem.EquipmentId = eq.Id;
-                        egitem.GearItemId = gearItem.Id;
-                        await DB.AddEntityAsync(egitem);
-                    }
-                }
+                        var tmp = DB.CreateEntity<Character>();
+                        tmp.Name = System.Data.Fake.PersonName.GetName();
+                        return tmp;
+                    });
+                characterTasks.Add(tsk);
+
+                var character = await tsk;
+                DB.AddEntity(character);
+            }
+
+            int maxEquipments = 100;
+            for (int e = 0; e < maxEquipments; e++)
+            {
+                var eq = await Task.Run<Equipment>(() =>
+                {
+                    var tmp = DB.CreateEntity<Equipment>();
+                    tmp.Name = string.Format("Equupment {0}", e);
+
+                    return tmp;
+                });
+                await Task.Delay(100);
+                var rndCharindex = rnd.Next(maxCharacters);
+                var rndCharacter = DB.Characters[rndCharindex];
+                eq.CharacterId = rndCharacter.Id; //character.Id;
+                DB.AddEntity(eq);
+            }
+
+            for (int egi = 0; egi < 1000; egi++)
+            {
+                var gearItem = await Task.Run<GearItem>(() =>
+                    {
+                        var tmp = DB.CreateEntity<GearItem>();
+                        tmp.Name = string.Format("Item {0}", egi + 1);
+                        tmp.Slot = (GearSlot)(System.Data.Fake.FakerRandom.Rand.Next((int)GearSlot.MIN, (int)GearSlot.MAX));
+                        return tmp;
+                    });
+                DB.AddEntity(gearItem);
+
+                var egitem = await Task.Run<EquipmentGearItem>(() =>
+                    {
+                        var tmp = DB.CreateEntity<EquipmentGearItem>();
+                        tmp.GearItemId = gearItem.Id;
+                        return tmp;
+                    });
+                var rndEquipmentindex = rnd.Next(maxEquipments);
+                var rndEquipment = DB.Equipments[rndEquipmentindex];
+                egitem.EquipmentId = rndEquipment.Id;
+                DB.AddEntity(egitem);
             }
         }
     }
@@ -98,10 +126,18 @@ namespace HDK.Demo.Pages
     {
         public CharacterDatabase ()
         {
-            Characters = RegisterEntityCollection<Character>();
+            var charloader = new CharacterItemsLoader(() => this);
+            Characters = RegisterEntityCollection<Character>(charloader);
             GearItems = RegisterEntityCollection<GearItem>();
             Equipments = RegisterEntityCollection<Equipment>();
             EquipmentGearItems = RegisterEntityCollection<EquipmentGearItem>();
+
+            StartHeartBeat(charloader);
+        }
+
+        private async void StartHeartBeat(IDataObjectCollectionLoader<Character> charloader)
+        {
+            await charloader.HeartBeat(null);
         }
  
         public DataObjectCollection<Character> Characters { get; private set; }
@@ -109,9 +145,6 @@ namespace HDK.Demo.Pages
         public DataObjectCollection<Equipment> Equipments { get; private set; }
         public DataObjectCollection<EquipmentGearItem> EquipmentGearItems { get; private set; } 
     }
-
-
-
     public enum GearSlot : int
     {
         MIN = 0,
@@ -137,7 +170,6 @@ namespace HDK.Demo.Pages
         ClassItem = 19,
         MAX = 19
     }
-
     public class GearItem : DataObject
     {
         public const string GearItemEquipmentGearItemRelation = "GearItemEquipmentGearItemRelation";
@@ -209,7 +241,6 @@ namespace HDK.Demo.Pages
             }
         }
     }
-
     public class EquipmentGearItem : DataObject
     {
         public EquipmentGearItem(DataObjectSet context, long id)
@@ -261,7 +292,6 @@ namespace HDK.Demo.Pages
             get { return FindInContext<GearItem>(_gearItemId); }
         }
     }
-
     public class Equipment : DataObject
     {
         public const string EquipmentEquipmentGearItemRelation = "EquipmentEquipmentGearItemRelation";
@@ -317,7 +347,6 @@ namespace HDK.Demo.Pages
             get { return FindInContext<Character>(_characterId); }
         }
     }
-
     public class Character : DataObject
     {
         public const string CharacterEquipmentRelation =
@@ -326,6 +355,7 @@ namespace HDK.Demo.Pages
         public Character(DataObjectSet context, long id)
             : base(context, id)
         {
+            MaxLoadingStage = 2;
         }
 
         public DataObjectCollection<Equipment> Equipments
@@ -352,7 +382,6 @@ namespace HDK.Demo.Pages
         }
 
         private int _level;
-
         public int Level
         {
             get { return _level; }
@@ -362,6 +391,46 @@ namespace HDK.Demo.Pages
                 _level = value;
                 RaisePropertyChanged("Level");
             }
+        }
+    }
+    public class CharacterItemsLoader : DataObjectCollectionLoader<Character>
+    {
+        int internalItemsCount = 1;
+
+        public CharacterItemsLoader(Func<DataObjectSet> findContext)
+            : base(findContext)
+        {
+        }
+
+        public override Task<IEnumerable<long>> FetchIDs()
+        {
+            return Task.Factory.StartNew<IEnumerable<long>>(() =>
+                {
+                    List<long> ret = new List<long>();
+                    for (int i = 0; i < internalItemsCount; i++)
+                        ret.Add(Context.GenerateId());
+                    return ret;
+                });
+        }
+
+        public override Task<long> FetchCount()
+        {
+            return Task.Factory.StartNew<long>(() => internalItemsCount);
+        }
+
+        public override Task<Character> FetchItem(long id, int stage)
+        {
+            return Task.Factory.StartNew<Character>(() =>
+                {
+                    Character ret = new Character(null, id);
+                    if (stage == 0)
+                        ret.Name = System.Data.Fake.PersonName.GetName();
+                    if (stage == 1)
+                        ret.Level = 10;
+                    if (stage == 2)
+                        ret.Level = 100;
+                    return ret;
+                });
         }
     }
     

@@ -154,6 +154,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HDK.AsyncLazy\HDK.AsyncLazy.csproj">
+      <Project>{29868292-21a4-4bce-9e91-2a3d44359b02}</Project>
+      <Name>HDK.AsyncLazy</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HDK\HDK.csproj">
       <Project>{9b72defb-367f-486d-8cd0-1dda8dc623e4}</Project>
       <Name>HDK</Name>

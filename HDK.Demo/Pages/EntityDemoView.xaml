@@ -32,7 +32,16 @@
         <Button Content="Load Data" Command="{Binding LoadDataCommand}" />
       </StackPanel>
       
-        <GridView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding DOCS.Source}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
+        <GridView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding DOCS.Source}" SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text=" Equipments: "/>
+                        <TextBlock Text="{Binding Equipments.Count}"/>        
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Vertical"/>

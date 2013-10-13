@@ -5,11 +5,17 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Data;
 
 namespace System.Data
 {
-    public class DataObjectCollection<T> : ObservableCollection<T>, IDataObjectCollection where T : DataObject
+    public class DataObjectCollection<T> : 
+        ObservableCollection<T>, 
+        IDataObjectCollection
+        //,        ISupportIncrementalLoading
+        where T : DataObject
     {
         private readonly object _writeLock = new object();
 
@@ -17,9 +23,12 @@ namespace System.Data
 
         private readonly Func<DataObjectSet> _findContext;
 
-        public DataObjectCollection(Func<DataObjectSet> findContext)
+        IDataObjectCollectionLoader<T> m_Loader;
+
+        public DataObjectCollection(Func<DataObjectSet> findContext, IDataObjectCollectionLoader<T> loader = null)
         {
             _findContext = findContext;
+            m_Loader = loader;
         }
 
         public DataObjectSet Context { get { return _findContext(); } }
@@ -153,7 +162,7 @@ namespace System.Data
             }
         }
 
-        protected override async void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             using (BlockReentrancy())
             {
@@ -161,16 +170,16 @@ namespace System.Data
                 if (ev == null) return;
                 var invocationList = ev.GetInvocationList();
                 var dispatcherObject = Context;
-                bool isOnDifferentThread = dispatcherObject != null && dispatcherObject.Dispatcher != null &&
-                                                 dispatcherObject.Dispatcher.HasThreadAccess == false;
+                //bool isOnDifferentThread = dispatcherObject != null && dispatcherObject.Dispatcher != null &&
+                //                                 dispatcherObject.Dispatcher.HasThreadAccess == false;
                 foreach (NotifyCollectionChangedEventHandler handler in invocationList)
                 {
-                    if (isOnDifferentThread)
-                    {
-                        var handler1 = handler;
-                        await dispatcherObject.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => handler1(this, e));
-                    }
-                    else
+                    //if (isOnDifferentThread)
+                    //{
+                    //    var handler1 = handler;
+                    //    await dispatcherObject.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => handler1(this, e));
+                    //}
+                    //else
                     {
                         handler(this, e);
                     }
@@ -178,6 +187,37 @@ namespace System.Data
             }
         }
 
+        //private bool m_HasMoreItems = false;
+        //public bool HasMoreItems
+        //{
+        //    get { FetchHasMoreItems();  return m_HasMoreItems; }
+        //    set { m_HasMoreItems = value; OnPropertyChanged(new PropertyChangedEventArgs("HasMoreItems")); }
+        //}
+
+        //private async void FetchHasMoreItems()
+        //{
+        //    HasMoreItems = m_Loader == null ? false : this.Count < await m_Loader.FetchCount();
+        //}
+
+        //public global::Windows.Foundation.IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+        //{
+        //    return LoadMoreItems((int)count).AsAsyncOperation<LoadMoreItemsResult>();
+        //}
+
+        //private async Task<LoadMoreItemsResult> LoadMoreItems(int count)
+        //{
+        //    if(m_Loader == null)
+        //        return new LoadMoreItemsResult();
+            
+        //    int newCount = await m_Loader.FetchCount();
+        //    int delta = Math.Min(0, newCount - this.Count); 
+        //    var ret = new LoadMoreItemsResult() { Count = (uint)delta};
+
+        //    for (int i = 0; i < delta; i++)
+        //        m_Loader.FetchItem(Count + i);
+
+        //    return ret;
+        //}
     }
 
 }

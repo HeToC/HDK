@@ -119,6 +119,7 @@
     <Compile Include="System\Data\DataObjectSet.cs" />
     <Compile Include="System\Data\IDataObjectCollection.cs" />
     <Compile Include="System\Data\IDataObjectFilter.cs" />
+    <Compile Include="System\Data\IDataObjectLoader.cs" />
     <Compile Include="System\Data\IDataObjectSelector.cs" />
     <Compile Include="System\Data\IDataObjectSorter.cs" />
     <Compile Include="System\DelegateDisposable.cs" />
@@ -152,9 +153,6 @@
     <Compile Include="System\ComponentModel\ViewModelLocatorService.cs" />
     <Compile Include="System\Data\Converters\ExportDataConverterAttribute.cs" />
     <Compile Include="System\Data\DataViewSource.cs" />
-    <Compile Include="System\Data\Deferred\DeferredLoadingPriorityAttribute.cs" />
-    <Compile Include="System\Data\Deferred\DeferredDataLoadState.cs" />
-    <Compile Include="System\Data\Deferred\IDeferredLoadingDataItem.cs" />
     <Compile Include="System\Data\Fake\Address.cs" />
     <Compile Include="System\Data\Fake\Company.cs" />
     <Compile Include="System\Data\Fake\Education.cs" />
@@ -167,7 +165,6 @@
     <Compile Include="System\Data\Fake\Lorem.cs" />
     <Compile Include="System\Data\Fake\PersonName.cs" />
     <Compile Include="System\Data\Fake\PhoneNumber.cs" />
-    <Compile Include="System\Data\IDataWrapper.cs" />
     <Compile Include="System\Messaging\MessageHubService.cs" />
     <Compile Include="System\Messaging\TaskExtensions.cs" />
     <Compile Include="System\Navigation\INavigationAware.cs" />
@@ -183,8 +180,6 @@
     <Compile Include="System\Services\IService.cs" />
     <Compile Include="System\Singleton.cs" />
     <Compile Include="System\Designer.cs" />
-    <Compile Include="System\Threading\Tasks\AsyncLazy.cs" />
-    <Compile Include="System\Threading\Tasks\AsyncLazyStatus.cs" />
     <Compile Include="System\UriExtensions.cs" />
     <Compile Include="System\WeakDelegate.cs" />
     <Compile Include="System\WeakEventHandler.cs" />
@@ -197,6 +192,15 @@
     <Compile Include="System\Windows\Xaml\ParallaxGridView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Data.Edm.Portable">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.0\lib\portable-net40+sl5+wp8+win8\Microsoft.Data.Edm.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData.Portable">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.0\lib\portable-net40+sl5+wp8+win8\Microsoft.Data.OData.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client.Portable">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.0\lib\portable-net45+sl5+wp8+win8\Microsoft.Data.Services.Client.Portable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
@@ -212,6 +216,9 @@
     <Reference Include="System.Composition.TypedParts">
       <HintPath>..\packages\Microsoft.Composition.1.0.17\lib\portable-net45+win8\System.Composition.TypedParts.dll</HintPath>
     </Reference>
+    <Reference Include="System.Spatial.Portable">
+      <HintPath>..\packages\System.Spatial.5.6.0\lib\portable-net40+sl5+wp8+win8\System.Spatial.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -220,6 +227,7 @@
     <Folder Include="System\Composition\" />
     <Folder Include="System\Dynamics\" />
     <Folder Include="System\Reflection\" />
+    <Folder Include="System\Threading\Tasks\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

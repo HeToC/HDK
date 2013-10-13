@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20623.1 VSUPREVIEW
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK", "HDK\HDK.csproj", "{9B72DEFB-367F-486D-8CD0-1DDA8DC623E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.Tests", "HDK.Tests\HDK.Tests.csproj", "{F16F7386-CEBB-4A5B-9BEA-AB87DCF62C9D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.Demo", "HDK.Demo\HDK.Demo.csproj", "{22A517DD-245B-46D4-AB0C-938290E9CB4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.AsyncLazy", "HDK.AsyncLazy\HDK.AsyncLazy.csproj", "{29868292-21A4-4BCE-9E91-2A3D44359B02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.Data", "HDK.Data\HDK.Data.csproj", "{8EB4B28F-D663-40F9-84A4-C456523AA36C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +89,26 @@ Global
 		{22A517DD-245B-46D4-AB0C-938290E9CB4F}.Release|x86.ActiveCfg = Release|x86
 		{22A517DD-245B-46D4-AB0C-938290E9CB4F}.Release|x86.Build.0 = Release|x86
 		{22A517DD-245B-46D4-AB0C-938290E9CB4F}.Release|x86.Deploy.0 = Release|x86
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Release|ARM.ActiveCfg = Release|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Release|x64.ActiveCfg = Release|Any CPU
+		{29868292-21A4-4BCE-9E91-2A3D44359B02}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|x64.ActiveCfg = Release|Any CPU
+		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

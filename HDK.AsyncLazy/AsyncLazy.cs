@@ -17,7 +17,7 @@ namespace System.Threading.Tasks
         #region Constructor default attribute values
 
         private static readonly CancellationToken DefaultCancellationToken = CancellationToken.None;
-        private static readonly TaskCreationOptions DefaultCreationOptions = TaskCreationOptions.DenyChildAttach;
+        private static readonly TaskCreationOptions DefaultCreationOptions = TaskCreationOptions.None;
         private static readonly TaskScheduler DefaultTaskScheduler = TaskScheduler.Default;
 
         #endregion

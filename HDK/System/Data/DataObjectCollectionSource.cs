@@ -12,9 +12,45 @@ using Windows.UI.Xaml;
 
 namespace System.Data
 {
-    public class DataObjectCollectionSource : DependencyObject
+    public class DataObjectCollectionSource : BindableBase// DependencyObject
     {
+        IEnumerable m_ItemsSource;
         public IEnumerable ItemsSource
+        {
+            get { return m_ItemsSource; }
+            set
+            {
+                m_ItemsSource = value;
+
+                RaisePropertyChanged();
+
+                AttachToEntitySource(value != null, (IDataObjectCollection)value);
+            }
+        }
+
+        IDataObjectFilter m_Filter;
+        public IDataObjectFilter Filter
+        {
+            get { return m_Filter; }
+            set { m_Filter = value; RaisePropertyChanged(); }
+        }
+
+        IDataObjectSelector m_Selector;
+        public IDataObjectSelector Selector
+        {
+            get { return m_Selector; }
+            set { m_Selector = value; RaisePropertyChanged(); }
+        }
+
+        IDataObjectSorter m_Sorter;
+        public IDataObjectSorter Sorter
+        {
+            get { return m_Sorter; }
+            set { m_Sorter = value; RaisePropertyChanged(); }
+        }
+
+        /*
+         *        public IEnumerable ItemsSource
         {
             get { return (IDataObjectCollection)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
@@ -46,54 +82,44 @@ namespace System.Data
 
         public static readonly DependencyProperty SorterProperty = DependencyProperty.Register("Sorter", typeof(IDataObjectSorter), typeof(DataObjectCollectionSource), new PropertyMetadata(null, OnPropertyChanged));
 
-        public bool CallDispatcherSynchronous { get; set; }
-
+         */
         public IEnumerable Source { get { return _viewSource; } }
 
-        private IDataObjectSelector _rowSelector;
         private readonly ObservableCollection<object> _viewSource = new ObservableCollection<object>();
         private readonly object _itemsSourceLock = new object();
 
-        private readonly DispatcherTimer _updateItemsTrigger = new DispatcherTimer();
         private WeakEventHandler<NotifyCollectionChangedEventArgs> _weakEventHandler;
         private WeakEventHandler<PropertyChangedEventArgs> _entityPropertyChangedHandler;
 
         private IDataObjectCollection _currentEntitySource;
-        private IDataObjectSorter _sorter;
-        private IDataObjectFilter _dataObjectFilter;
+
 
         public DataObjectCollectionSource()
         {
-            CallDispatcherSynchronous = true;
-
-
-            _updateItemsTrigger.Interval = new TimeSpan(0, 0, 1);
-            _updateItemsTrigger.Tick += (s, e) => UpdateViewSource();
-            //_updateItemsTrigger.SetElapsedAction(UpdateViewSource);
         }
 
-        protected static void OnPropertyChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
-        {
-            var collectionSource = target as DataObjectCollectionSource;
-            if (collectionSource == null) return;
-            if (e.Property == ItemsSourceProperty)
-            {
-                bool hasNewValue = e.NewValue != null;
-                collectionSource.AttachToEntitySource(hasNewValue, (IDataObjectCollection)e.NewValue);
-            }
-            else if (e.Property == RowSelectorProperty)
-            {
-                collectionSource._rowSelector = e.NewValue as IDataObjectSelector;
-            }
-            else if (e.Property == SorterProperty)
-            {
-                collectionSource._sorter = e.NewValue as IDataObjectSorter;
-            }
-            else if (e.Property == EntityFilterProperty)
-            {
-                collectionSource._dataObjectFilter = e.NewValue as IDataObjectFilter;
-            }
-        }
+        //protected static void OnPropertyChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
+        //{
+        //    var collectionSource = target as DataObjectCollectionSource;
+        //    if (collectionSource == null) return;
+        //    if (e.Property == ItemsSourceProperty)
+        //    {
+        //        bool hasNewValue = e.NewValue != null;
+        //        collectionSource.AttachToEntitySource(hasNewValue, (IDataObjectCollection)e.NewValue);
+        //    }
+        //    else if (e.Property == RowSelectorProperty)
+        //    {
+        //        collectionSource._rowSelector = e.NewValue as IDataObjectSelector;
+        //    }
+        //    else if (e.Property == SorterProperty)
+        //    {
+        //        collectionSource._sorter = e.NewValue as IDataObjectSorter;
+        //    }
+        //    else if (e.Property == EntityFilterProperty)
+        //    {
+        //        collectionSource._dataObjectFilter = e.NewValue as IDataObjectFilter;
+        //    }
+        //}
 
         private void AttachToEntitySource(bool hasNewValue, IDataObjectCollection view)
         {
@@ -111,7 +137,7 @@ namespace System.Data
                 _entityPropertyChangedHandler = new WeakEventHandler<PropertyChangedEventArgs>(EntityPropertyChanged);
                 _currentEntitySource.CollectionChanged += _weakEventHandler.Invoke;
                 _currentEntitySource.EntityPropertyChanged += _entityPropertyChangedHandler.Invoke;
-                if (_rowSelector != null)
+                if (this.Selector != null)
                 {
                     SelectRows();
                 }
@@ -130,61 +156,37 @@ namespace System.Data
             }
         }
 
-        private async void CallDispatcher(Action a)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => a());
-        }
-
         private void SelectRows()
         {
-            CallDispatcher(() =>
+            lock (_itemsSourceLock)
             {
-                lock (_itemsSourceLock)
-                {
-                    _rowSelector.Evaluate(_currentEntitySource, _viewSource);
-                }
-            });
+                Selector.Evaluate(_currentEntitySource, _viewSource);
+            }
         }
 
         private void EntityPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             if (args != null &&
-                (_dataObjectFilter != null && _dataObjectFilter.RequiresEvaluation(args.PropertyName) ||
-                _sorter != null && _sorter.RequiresEvaluation(args.PropertyName)))
+                (Filter != null && Filter.RequiresEvaluation(args.PropertyName) ||
+                Sorter != null && Sorter.RequiresEvaluation(args.PropertyName)))
             {
-                TriggerUpdate();
+                UpdateViewSource();
             }
-        }
-
-        public void TriggerUpdate()
-        {
-            _updateItemsTrigger.Stop();
-            _updateItemsTrigger.Start();
         }
 
         private void ListChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
-                CallDispatcher(() =>
+                lock (_itemsSourceLock)
                 {
-                    lock (_itemsSourceLock)
-                    {
-                        _viewSource.Clear();
-                    }
-                });
+                    _viewSource.Clear();
+                }
                 return;
             }
-            if (_rowSelector == null)
+            if (Selector == null)
             {
-                if (CallDispatcherSynchronous)
-                {
-                    UpdateViewSource();
-                }
-                else
-                {
-                    TriggerUpdate();
-                }
+                UpdateViewSource();
             }
             else
             {
@@ -194,46 +196,42 @@ namespace System.Data
 
         private void UpdateViewSource()
         {
-            _updateItemsTrigger.Stop();
-
-            CallDispatcher(() =>
+            lock (_itemsSourceLock)
             {
-                lock (_itemsSourceLock)
+                var rowViews = (from DataObject x in _currentEntitySource
+                                where Filter == null || Filter.Evaluate(x)
+                                select x).ToList();
+                if (Sorter != null)
                 {
-                    var rowViews = (from DataObject x in _currentEntitySource
-                                    where _dataObjectFilter == null || _dataObjectFilter.Evaluate(x)
-                                    select x).ToList();
-                    if (_sorter != null)
+                    rowViews = rowViews.OrderBy(Sorter.SortFunction).ToList();
+                }
+                for (int i = _viewSource.Count - 1; i > -1; i--)
+                {
+                    if (rowViews.Contains(_viewSource[i])) continue;
+                    _viewSource.RemoveAt(i);
+                }
+                int newIndex = 0;
+                foreach (DataObject x in rowViews)
+                {
+                    if (x == null)
+                        continue;
+                    var index = _viewSource.IndexOf(x);
+                    if (index > -1)
                     {
-                        rowViews = rowViews.OrderBy(_sorter.SortFunction).ToList();
-                    }
-                    for (int i = _viewSource.Count - 1; i > -1; i--)
-                    {
-                        if (rowViews.Contains(_viewSource[i])) continue;
-                        _viewSource.RemoveAt(i);
-                    }
-                    int newIndex = 0;
-                    foreach (DataObject x in rowViews)
-                    {
-                        if (x == null)
-                            continue;
-                        var index = _viewSource.IndexOf(x);
-                        if (index > -1)
+                        if (index != newIndex)
                         {
-                            if (index != newIndex)
-                            {
-                                _viewSource.RemoveAt(index);
-                                _viewSource.Insert(newIndex, x);
-                            }
-                        }
-                        else
-                        {
+                            _viewSource.RemoveAt(index);
                             _viewSource.Insert(newIndex, x);
                         }
-                        newIndex++;
                     }
+                    else
+                    {
+                        _viewSource.Insert(newIndex, x);
+                    }
+                    newIndex++;
                 }
-            });
+            }
+
         }
     }
 }

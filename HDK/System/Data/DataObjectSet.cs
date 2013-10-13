@@ -9,17 +9,16 @@ namespace System.Data
 {
     public class DataObjectSet
     {
-        public CoreDispatcher Dispatcher { get; set; }
         private readonly object _generateIdLock = new object();
         private long _nextGeneratedId = 1;
         private readonly object _foreignKeysLock = new object();
         private readonly Dictionary<string, Dictionary<long, IDataObjectCollection>> _foreignKeys = new Dictionary<string, Dictionary<long, IDataObjectCollection>>();
         private readonly Dictionary<Type, IDataObjectCollection> _resolveReferences = new Dictionary<Type, IDataObjectCollection>();
 
-        public DataObjectCollection<T> RegisterEntityCollection<T>() where T : DataObject
+        public DataObjectCollection<T> RegisterEntityCollection<T>(IDataObjectCollectionLoader<T> loader = null) where T : DataObject
         {
             if (_resolveReferences.ContainsKey(typeof(T))) throw new ArgumentException(" An DataObjectSet with that name already exists.");
-            var entityCollection = new DataObjectCollection<T>(() => this);
+            var entityCollection = new DataObjectCollection<T>(() => this, loader);
             _resolveReferences.Add(typeof(T), entityCollection);
             return entityCollection;
         }
