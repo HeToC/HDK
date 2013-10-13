@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.AsyncLazy", "HDK.AsyncL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.Data", "HDK.Data\HDK.Data.csproj", "{8EB4B28F-D663-40F9-84A4-C456523AA36C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDK.Data.Demo", "HDK.Data.Demo\HDK.Data.Demo.csproj", "{20932ED8-18FE-4C4E-B4DE-834115303093}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,16 @@ Global
 		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|ARM.ActiveCfg = Release|Any CPU
 		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|x64.ActiveCfg = Release|Any CPU
 		{8EB4B28F-D663-40F9-84A4-C456523AA36C}.Release|x86.ActiveCfg = Release|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Release|ARM.ActiveCfg = Release|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Release|x64.ActiveCfg = Release|Any CPU
+		{20932ED8-18FE-4C4E-B4DE-834115303093}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
