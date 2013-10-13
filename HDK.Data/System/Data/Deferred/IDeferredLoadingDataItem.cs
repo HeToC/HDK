@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Data.Deferred
 {
-    public interface IDeferredDataItem<TElement> : IDataWrapper<TElement>
+    public interface IDeferredDataItem// : IDataWrapper<TElement>
     {
         /// <summary>
         /// Returns the current state of the item

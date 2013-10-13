@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace System.Data.Deferred
 {
+    [Flags]
     public enum DeferredDataState
     {
         /// <summary>
         /// No additional data is loaded
         /// </summary>
-        Unloaded,
+        Unloaded = 1,
 
         /// <summary>
         /// Data that is quick to load and doesn't use much memory is loaded
@@ -19,7 +20,7 @@ namespace System.Data.Deferred
         /// <remarks>
         /// The item is in the virtual list but is not (yet) visible
         /// </remarks>
-        Minimum,
+        Minimum = 2,
 
         /// <summary>
         /// All fast data has been loaded, and slow items are loading
@@ -27,7 +28,7 @@ namespace System.Data.Deferred
         /// <remarks>
         /// The item is in the list and visible, and all content is loading
         /// </remarks>
-        Loading,
+        Loading = 4,
 
         /// <summary>
         /// All data has been loaded.
@@ -35,7 +36,7 @@ namespace System.Data.Deferred
         /// <remarks>
         /// The item is in the list and visible, and all content has loaded
         /// </remarks>
-        Loaded,
+        Loaded = 8,
 
         /// <summary>
         /// Large data items have been released, only small ones (regardless of speed) are loaded
@@ -43,7 +44,7 @@ namespace System.Data.Deferred
         /// <remarks>
         /// The item is in the virtual list but is no longer visible
         /// </remarks>
-        Cached,
+        Cached = 16,
 
         /// <summary>
         /// All items except the large, slow ones are loaded (fast ones are loaded; small ones were cached)
@@ -51,6 +52,8 @@ namespace System.Data.Deferred
         /// <remarks>
         /// The item is in the list and has become visible again after being invisible
         /// </remarks>
-        Reloading,
+        Reloading = 32,
+
+        All = Unloaded | Minimum | Loading | Loaded | Cached | Reloading
     }
 }

@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="System\Data\Deferred\DeferredDataLoadState.cs" />
-    <Compile Include="System\Data\Deferred\DeferredLoadingPriorityAttribute.cs" />
+    <Compile Include="System\Data\Deferred\DeferredPropertyAttribute.cs" />
     <Compile Include="System\Data\Deferred\IDeferredLoadingDataItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\Data\IDataWrapper.cs" />

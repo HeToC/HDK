@@ -111,7 +111,7 @@ namespace System.Threading.Tasks
             {
                 if (m_adaptee.Value.IsCompleted)
                     return m_adaptee.Value.Result;
-
+                Start();
                 return DefaultValue;
             }
             set
@@ -185,14 +185,14 @@ namespace System.Threading.Tasks
         {
             DefaultValue = defaultValue;
 
-            m_adaptee = CreateAdaptee(() => taskFactory(), null, cancellationToken, creationOptions, scheduler);
+            m_adaptee = CreateAdaptee(() => this.TaskContinuationFunction(taskFactory()), null, cancellationToken, creationOptions, scheduler);
         }
 
         public AsyncLazy(Func<object, Task<T>> taskFactory,T defaultValue, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             DefaultValue = defaultValue;
 
-            m_adaptee = CreateAdaptee((o) => taskFactory(o), state, cancellationToken, creationOptions, scheduler);
+            m_adaptee = CreateAdaptee((o) => this.TaskContinuationFunction(taskFactory(o)), state, cancellationToken, creationOptions, scheduler);
         }
 
         #endregion
@@ -203,21 +203,26 @@ namespace System.Threading.Tasks
 
         private Lazy<Task<T>> CreateAdaptee(Func<T> valueFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, cancellationToken, creationOptions, scheduler).ContinueWith<T>(TaskContinuationFunction));
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, cancellationToken, creationOptions, scheduler));
+                //.ContinueWith<T>(TaskContinuationFunction, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, scheduler));
         }
         private Lazy<Task<T>> CreateAdaptee(Func<object, T> valueFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, context, cancellationToken, creationOptions, scheduler).ContinueWith<T>(TaskContinuationFunction));
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew(valueFactory, context, cancellationToken, creationOptions, scheduler));
+                //.ContinueWith<T>(TaskContinuationFunction, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, scheduler));
         }
 
         private Lazy<Task<T>> CreateAdaptee(Func<Task<T>> taskFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(() => taskFactory(), cancellationToken, creationOptions, scheduler).Unwrap().ContinueWith<T>(TaskContinuationFunction));
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(() => taskFactory(), cancellationToken, creationOptions, scheduler).Unwrap());
+                //.Unwrap();
+                //.ContinueWith<T>(TaskContinuationFunction, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, scheduler));
         }
         private Lazy<Task<T>> CreateAdaptee(Func<object, Task<T>> taskFactory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(taskFactory, context, cancellationToken, creationOptions, scheduler)
-                .Unwrap().ContinueWith<T>(TaskContinuationFunction));
+            return new Lazy<Task<T>>(() => Task.Factory.StartNew<Task<T>>(taskFactory, context, cancellationToken, creationOptions, scheduler).Unwrap());
+                //.Unwrap()
+                //.ContinueWith<T>(TaskContinuationFunction, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, scheduler));
         }
 
         //protected virtual Lazy<Task<T>> CreateAdaptee(Expression<Func<T>> factory, object context, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
