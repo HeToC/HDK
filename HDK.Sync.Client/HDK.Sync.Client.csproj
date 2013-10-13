@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D5E78724-C6CA-44A2-BDE2-4A5CF94FF093}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Synchronization.ClientServices</RootNamespace>
+    <AssemblyName>Microsoft.Synchronization.ClientServices</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Client\WinRT\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Client\WinRT\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\Client\WinRT\Debug\ARM\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>..\..\Client\WinRT\Release\ARM\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\Client\WinRT\Debug\x64\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\Client\WinRT\Release\x64\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\Client\WinRT\Release\x86\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE; SQLITE_SUPPORT_GUID</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ClientCommon\CacheControllerAsync.cs" />
+    <Compile Include="ClientCommon\HttpCacheRequestHandlerAsync.cs" />
+    <Compile Include="ClientCommon\Exceptions\AsyncWorkManagerException.cs" />
+    <Compile Include="ClientCommon\CacheControllerBehavior.cs" />
+    <Compile Include="ClientCommon\Exceptions\CacheControllerException.cs" />
+    <Compile Include="ClientCommon\CacheRefreshStatistics.cs" />
+    <Compile Include="ClientCommon\CacheRequest.cs" />
+    <Compile Include="ClientCommon\Enums\CacheRequestType.cs" />
+    <Compile Include="ClientCommon\ChangeSet.cs" />
+    <Compile Include="ClientCommon\ChangeSetResponse.cs" />
+    <Compile Include="ClientCommon\OfflineSyncProvider.cs" />
+    <Compile Include="ClientCommon\CacheRequestResult.cs" />
+    <Compile Include="ClientCommon\Enums\SerializationFormat.cs" />
+    <Compile Include="Formatters\JsonXmlReader\Enums.cs" />
+    <Compile Include="Formatters\JsonXmlReader\StringHandle.cs" />
+    <Compile Include="Formatters\JsonXmlReader\ValueHandle.cs" />
+    <Compile Include="Formatters\JsonXmlReader\XmlBufferReader.cs" />
+    <Compile Include="Formatters\JsonXmlReader\XmlConverter.cs" />
+    <Compile Include="Formatters\JsonXmlReader\XmlJsonReader.cs" />
+    <Compile Include="Formatters\JsonXmlReader\XmlNode.cs" />
+    <Compile Include="Formatters\ODataJsonReader.cs" />
+    <Compile Include="Formatters\ODataJsonWriter.cs" />
+    <Compile Include="Formatters\JsonXmlReader\XmlJsonWriter.cs" />
+    <Compile Include="IsolatedStorage\ArchiveIdManager.cs" />
+    <Compile Include="Common\Conflict.cs" />
+    <Compile Include="Common\IOfflineEntity.cs" />
+    <Compile Include="IsolatedStorage\OfflineEntityKey.cs" />
+    <Compile Include="Common\OfflineEntityMetadata.cs" />
+    <Compile Include="IsolatedStorage\OfflineCollection.cs" />
+    <Compile Include="IsolatedStorage\OfflineEntitySnapshot.cs" />
+    <Compile Include="IsolatedStorage\OfflineEntityState.cs" />
+    <Compile Include="IsolatedStorage\OfflineConflict.cs" />
+    <Compile Include="IsolatedStorage\SyncConflictResolutionAction.cs" />
+    <Compile Include="Common\SyncConflict.cs" />
+    <Compile Include="Common\SyncConflictResolution.cs" />
+    <Compile Include="Common\SyncError.cs" />
+    <Compile Include="IsolatedStorage\OfflineEntity.cs" />
+    <Compile Include="IsolatedStorage\StorageHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IsolatedStorage\WinEightSyncError.cs" />
+    <Compile Include="Common\OfflineSchema.cs" />
+    <Compile Include="IsolatedStorage\WinEightSyncConflict.cs" />
+    <Compile Include="ExceptionUtility.cs" />
+    <Compile Include="Formatters\AtomEntryInfoWrapper.cs" />
+    <Compile Include="Formatters\AtomHelper.cs" />
+    <Compile Include="Formatters\EntryInfoWrapper.cs" />
+    <Compile Include="Formatters\FormatterConstants.cs" />
+    <Compile Include="Formatters\FormatterUtilities.cs" />
+    <Compile Include="Formatters\JsonElementTypes.cs" />
+    <Compile Include="Formatters\JsonEntryInfoWrapper.cs" />
+    <Compile Include="Formatters\JsonXmlReader\JsonHelper.cs" />
+    <Compile Include="Formatters\ODataAtomReader.cs" />
+    <Compile Include="Formatters\ODataAtomWriter.cs" />
+    <Compile Include="Formatters\ReaderItemType.cs" />
+    <Compile Include="Formatters\ReflectionExtensionMethods.cs" />
+    <Compile Include="Formatters\ReflectionUtility.cs" />
+    <Compile Include="Formatters\SyncReader.cs" />
+    <Compile Include="Formatters\SyncWriter.cs" />
+    <Compile Include="IsolatedStorage\AutoResetLock.cs" />
+    <Compile Include="IsolatedStorage\CacheData.cs" />
+    <Compile Include="IsolatedStorage\CacheFileType.cs" />
+    <Compile Include="IsolatedStorage\Constants.cs" />
+    <Compile Include="IsolatedStorage\DownloadResponseData.cs" />
+    <Compile Include="IsolatedStorage\WinEightContext.cs" />
+    <Compile Include="IsolatedStorage\LoadCompletedEventArgs.cs" />
+    <Compile Include="IsolatedStorage\SaveFailedException.cs" />
+    <Compile Include="Common\StorageExtensions.cs" />
+    <Compile Include="IsolatedStorage\SyncActiveException.cs" />
+    <Compile Include="IsolatedStorage\SyncErrorInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IsolatedStorage\OfflineSyncErrorInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
+    <VisualStudioVersion>11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+    -->
+  <Target Name="AfterBuild">
+    <!--<Message Text="TargetFileName : $(TargetFileName) " Importance="high" />
+    <Message Text="ProjectPriFileName : $(ProjectPriFileName) " Importance="high" />
+    <Message Text="MSBuildAllProjects  : $(MSBuildAllProjects) " Importance="high" />
+    <Message Text="SourceFiles : @(SourceFiles) " Importance="high" />
+    <Message Text="DestinationFiles : @(DestinationFiles) " Importance="high" />
+    <Message Text="ExpandPayloadDirectories : @(ExpandPayloadDirectories) " Importance="high" />-->
+    <PropertyGroup>
+      <!-- Working directory for each platform -->
+      <NugetOutputDir>$(SolutionDir)Nuget\SyncClient.SQLite\</NugetOutputDir>
+      <!-- Nuget platform -->
+      <NugetFx>netcore45</NugetFx>
+      <!-- Nuget local repository -->
+      <NugetRepositoryDir>
+        C:\Users\spertus\Documents\Visual Studio 2012\Projects\PERSONAL\Nuget\
+      </NugetRepositoryDir>
+      <!-- Local Nuget.exe command line -->
+      <NugetCommandLine>C:\Program Files (x86)\NuGet\NuGet.exe</NugetCommandLine>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Result package -->
+      <NugetPkgFileOutput Include="$(NugetOutputDir)*.nupkg" />
+      <!-- Includes all mandatories files  -->
+      <NugetInputFiles Include="$(OutDir)\*.pri" />
+      <NugetInputFiles Include="$(OutDir)\*.dll" />
+      <NugetInputFiles Include="$(OutDir)\*.winmd" />
+    </ItemGroup>
+    <!-- Copy x86 Files to lib for VS design time -->
+    <Copy Condition="( ('$(Configuration)'=='Release') AND ('$(Platform)' == 'x86') )" SourceFiles="@(NugetInputFiles)" ContinueOnError="true" DestinationFiles="@(NugetInputFiles->'$(NugetOutputDir)lib\$(NugetFx)\%(Filename)%(Extension)')" />
+    <!-- Copy Files to Working directories -->
+    <Copy Condition="'$(Configuration)'=='Release'" SourceFiles="@(NugetInputFiles)" ContinueOnError="true" DestinationFiles="@(NugetInputFiles->'$(NugetOutputDir)build\$(NugetFx)\$(Platform)\%(Filename)%(Extension)')" />
+    <!-- Create the Package -->
+    <Exec Condition="'$(Configuration)'=='Release'" WorkingDirectory="$(NugetOutputDir)" ContinueOnError="true" Command="%22$(NugetCommandLine)%22 pack SyncClient.SQLite.nuspec">
+    </Exec>
+    <Copy Condition="'$(Configuration)'=='Release'" SourceFiles="@(NugetPkgFileOutput)" ContinueOnError="true" DestinationFolder="$(NugetRepositoryDir)" />
+    <!--
+   
+    
+
+    
+
+  -->
+  </Target>
+</Project>
